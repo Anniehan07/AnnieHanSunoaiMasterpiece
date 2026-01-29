@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suno AI 프롬프트 마스터 - 애니한tv</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --success: #00d2ff;
+            --warning: #ffd32a;
+            --youtube: #FF0000;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Gowun Batang', serif;
+            font-size: 3.5em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-out 0.3s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #reset-btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #reset-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .instruction-box h3 {
+            color: var(--gradient-start);
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .instruction-box ol {
+            padding-left: 25px;
+            line-height: 2;
+        }
+
+        .instruction-box li {
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .step {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .step:nth-child(1) { animation-delay: 0.1s; }
+        .step:nth-child(2) { animation-delay: 0.15s; }
+        .step:nth-child(3) { animation-delay: 0.2s; }
+        .step:nth-child(4) { animation-delay: 0.25s; }
+        .step:nth-child(5) { animation-delay: 0.3s; }
+        .step:nth-child(6) { animation-delay: 0.35s; }
+        .step:nth-child(7) { animation-delay: 0.4s; }
+        .step:nth-child(8) { animation-delay: 0.45s; }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .step.required .step-title::after {
+            content: ' *';
+            color: #f093fb;
+            font-weight: 700;
+        }
+
+        .step-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: block;
+            padding-left: 20px;
+            border-left: 5px solid var(--accent);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95em;
+            font-weight: 500;
+            color: #495057;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--gradient-start);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            border-color: var(--gradient-start);
+        }
+
+        button.active {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            padding: 16px 20px;
+            font-size: 1em;
+            background: #f8f9fa;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--gradient-start);
+            background: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .main-btn {
+            width: 100%;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .main-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .main-btn:hover:not(:disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .main-btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .main-btn.youtube-btn {
+            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
+            margin-top: 15px;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .main-btn.youtube-btn:hover:not(:disabled) {
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.4);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        #result, #youtube-result {
+            margin-top: 50px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        #result {
+            display: none;
+        }
+
+        .copy-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #4b6584 0%, #3d5266 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            flex: 1;
+            min-width: 150px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(75, 101, 132, 0.3);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(75, 101, 132, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .output-box {
+            white-space: pre-wrap;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid var(--accent);
+            line-height: 2;
+            font-size: 1.05em;
+            color: #333;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 글로벌 유튜브 패키지 스타일 */
+        #youtube-result {
+            display: none;
+        }
+
+        .youtube-header {
+            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 25px 25px 0 0;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .youtube-header h2 {
+            font-family: 'Gowun Batang', serif;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .youtube-header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .youtube-content {
+            background: white;
+            border-radius: 0 0 25px 25px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 20px;
+        }
+
+        .tab-btn {
+            padding: 14px 28px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #495057;
+            font-size: 1.05em;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn.active-tab {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .tab-content.active-content {
+            display: block;
+        }
+
+        .lang-section {
+            padding: 35px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .lang-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--gradient-start);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .lang-flag {
+            font-size: 2em;
+        }
+
+        .content-block {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #f1f3f5;
+            transition: all 0.3s ease;
+        }
+
+        .content-block:hover {
+            border-color: var(--gradient-start);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .content-label {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .content-text {
+            color: #212529;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .timestamp-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+            border: 2px solid var(--warning);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 211, 42, 0.2);
+        }
+
+        .timestamp-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .copy-lang-btn {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.95em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 12px;
+            margin-top: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .copy-lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-lang-btn.copied {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            animation: pulse 0.5s;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .step {
+                padding: 25px;
+            }
+
+            .main-btn {
+                font-size: 1.2em;
+                padding: 20px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+        }
+
+        /* 스크롤바 스타일링 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--gradient-end) 0%, var(--gradient-start) 100%);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎵 Suno AI 프롬프트 마스터</h1>
+        <p class="subtitle">애니한 익스클루시브 : Suno 프롬프트 엔진 & VideoBERT 알고리즘</p>
+    </div>
+    
+    <div class="header-controls">
+        <button id="reset-btn">🔄 처음부터 다시 선택하기</button>
+    </div>
+    
+    <div class="instruction-box">
+        <h3>📌 Google AI Studio 사용 안내</h3>
+        <ol>
+            <li>아래 옵션들을 선택하여 원하는 음악 스타일을 설정하세요</li>
+            <li><strong>"프롬프트 생성하기"</strong> 버튼을 클릭하세요</li>
+            <li>생성된 프롬프트를 복사하여 <strong>Google AI Studio</strong>의 채팅창에 붙여넣기 하세요</li>
+            <li><strong>"글로벌 유튜브 패키지 생성"</strong> 버튼으로 6개국어 제목, 설명, 해시태그를 한번에 생성하세요</li>
+        </ol>
+    </div>
+
+    <div class="step required">
+        <span class="step-title">1. 장르 선택</span>
+        <div class="btn-group" id="genre-btns"></div>
+    </div>
+    
+    <div class="step required">
+        <span class="step-title">2. 분위기 및 감성 선택</span>
+        <div class="btn-group" id="mood-btns"></div>
+    </div>
+    
+    <div class="step required">
+        <span class="step-title">3. 보컬 및 창법 선택</span>
+        <div class="btn-group" id="vocal-btns"></div>
+    </div>
+    
+    <div class="step">
+        <span class="step-title">4. 사용 용도 및 상황</span>
+        <div class="btn-group" id="usage-btns"></div>
+        <input type="text" id="custom-usage" placeholder="예: 유튜브 브이로그, 요리 배경음 등">
+    </div>
+    
+    <div class="step">
+        <span class="step-title">5. 주요 악기 설정</span>
+        <div class="btn-group" id="instrument-btns"></div>
+        <input type="text" id="custom-instrument" placeholder="예: 싱잉볼, 첼로, 해금 등">
+    </div>
+    
+    <div class="step">
+        <span class="step-title">6. 속도 (BPM) 설정</span>
+        <div class="btn-group" id="bpm-btns"></div>
+    </div>
+    
+    <div class="step required">
+        <span class="step-title">7. 가사 언어 설정</span>
+        <div class="btn-group" id="lang-btns"></div>
+    </div>
+    
+    <div class="step required">
+        <span class="step-title">8. 가사 주제 및 요청</span>
+        <div class="btn-group" id="theme-btns"></div>
+        <textarea id="custom-theme" placeholder="가사 주제를 자유롭게 적어주세요. (필수)"></textarea>
+    </div>
+
+    <div class="error-message" id="error-message"></div>
+
+    <button class="main-btn" id="generate-btn">📋 Google AI Studio용 프롬프트 생성하기</button>
+    <button class="main-btn youtube-btn" id="youtube-btn">🌍 글로벌 유튜브 패키지 생성하기 (6개국어)</button>
+
+    <div id="result">
+        <div class="copy-section">
+            <button class="copy-btn" id="copy-all">📋 전체 프롬프트 복사</button>
+        </div>
+        <div class="output-box" id="output-content"></div>
+    </div>
+
+    <div id="youtube-result">
+        <div class="youtube-header">
+            <h2>🌍 글로벌 유튜브 업로드 패키지</h2>
+            <p>VideoBERT 알고리즘 적용 - 6개국어 자동 번역</p>
+        </div>
+        <div class="youtube-content">
+            <div class="tabs" id="lang-tabs"></div>
+            <div id="lang-content-container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const data = {
+        genres: [
+            "시티팝(City Pop)", "로파이(Lo-fi)", "칠웨이브", "K-록", "합창/중창", 
+            "명상/치유", "CCM/찬양", "K-pop", "발라드", "재즈", "팝", "힙합", 
+            "뉴에이지", "앰비언트", "트로트", "블루스", "컨트리", "포크", "레게", 
+            "디스코", "록", "전자음악", "R&B", "소울", "신스팝", "드림 팝", 
+            "인디팝", "가스펠", "스윙", "라틴", "이지리스닝", "자장가", "동요", "캐롤"
+        ],
+        moods: [
+            "잔잔한 (고요한)", "깊은 슬픔", "우울한 새벽", "경건하고 은혜로운", 
+            "따스한 위로", "순수한 평화", "포근한 구름", "에너지 폭발", 
+            "로맨틱 감성", "일몰같은", "우주 같은", "다크하고 강렬", 
+            "시원한 바람", "강력한 드라이브", "도전적인", "웅장한 대서사시", "귀여운"
+        ],
+        vocals: [
+            "어린이 합창단", "어른 합창단", "맑고 깨끗한 여성", "에테리얼 여성", 
+            "로맨틱 보컬", "허스키 남성", "소년 보컬", "맑은 소녀 보컬", 
+            "열정적인 남자", "코러스 합창", "보코더 효과", "속삭임", "랩", 
+            "오페라틱", "공기반 사운드반", "가사없는(Instrumental)"
+        ],
+        usages: [
+            "유튜브 브이로그 BGM", "게임 방송 배경음", "공부/집중력 향상", 
+            "운동/피트니스", "숙면/명상", "카페 분위기", "감성 쇼츠/틱톡", 
+            "교회 예배/묵상"
+        ],
+        instruments: [
+            "그랜드 피아노", "어쿠스틱 기타", "일렉 기타", "오르골", "색소폰", 
+            "바이올린", "첼로", "싱잉볼", "신디사이저"
+        ],
+        bpms: [
+            "매우 느림 (60-80 BPM)", "느림 (80-100 BPM)", "보통 (100-120 BPM)", 
+            "빠름 (120-140 BPM)", "매우 빠름 (140-160 BPM)", "초고속 (160+ BPM)"
+        ],
+        langs: ["한국어(Korean)", "영어(English)", "한국어+영어 섞어서"],
+        themes: [
+            "첫사랑", "자장가", "새벽 묵상", "이별의 아픔", "재회", "짝사랑", 
+            "자기 사랑", "용기(Antifragile)", "갓생", "주체적 나", "실패와 극복", 
+            "자신감 회복", "향수(Nostalgia)", "비 오는 날", "여행", "감사와 기도", 
+            "가사없는(연주곡)", "크리스마스"
+        ]
+    };
+
+    const languages = [
+        { code: 'ko', name: '한국어', flag: '🇰🇷' },
+        { code: 'en', name: 'English', flag: '🇺🇸' },
+        { code: 'ja', name: '日本語', flag: '🇯🇵' },
+        { code: 'es', name: 'Español', flag: '🇪🇸' },
+        { code: 'pt', name: 'Português', flag: '🇧🇷' },
+        { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' }
+    ];
+
+    const selections = {
+        genre: null,
+        mood: null,
+        vocal: null,
+        usage: null,
+        instrument: null,
+        bpm: null,
+        lang: null,
+        theme: null
+    };
+
+    let generatedPrompt = "";
+    let youtubePackage = {};
+
+    function initButtonGroup(containerId, itemList, selectionKey) {
+        const container = document.getElementById(containerId);
+        
+        itemList.forEach(item => {
+            const button = document.createElement('button');
+            button.innerText = item;
+            
+            if (item === selections[selectionKey]) {
+                button.classList.add('active');
+            }
+            
+            button.onclick = () => {
+                Array.from(container.children).forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                selections[selectionKey] = item;
+                hideError();
+            };
+            
+            container.appendChild(button);
+        });
+    }
+
+    function validateSelections() {
+        const errors = [];
+        
+        if (!selections.genre) errors.push('장르');
+        if (!selections.mood) errors.push('분위기');
+        if (!selections.vocal) errors.push('보컬');
+        if (!selections.lang) errors.push('언어');
+        
+        const themeInput = document.getElementById('custom-theme').value.trim();
+        if (!themeInput && !selections.theme) {
+            errors.push('가사 주제');
+        }
+        
+        return errors;
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = message;
+        errorDiv.classList.add('show');
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideError() {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.classList.remove('show');
+    }
+
+    async function copyToClipboard(text, buttonId, successMessage) {
+        if (!text || text.trim() === '') {
+            alert('복사할 내용이 없습니다.');
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(text);
+            
+            const button = document.getElementById(buttonId);
+            const originalText = button.textContent;
+            button.classList.add('copied');
+            button.textContent = '✓ ' + successMessage;
+            
+            setTimeout(() => {
+                button.classList.remove('copied');
+                button.textContent = originalText;
+            }, 2000);
+            
+        } catch (err) {
+            alert('복사에 실패했습니다. 수동으로 복사해주세요.');
+            console.error('복사 실패:', err);
+        }
+    }
+
+    function resetAll() {
+        if (!confirm('모든 선택을 초기화하시겠습니까?')) {
+            return;
+        }
+
+        selections.genre = null;
+        selections.mood = null;
+        selections.vocal = null;
+        selections.usage = null;
+        selections.instrument = null;
+        selections.bpm = null;
+        selections.lang = null;
+        selections.theme = null;
+
+        document.querySelectorAll('.btn-group button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        document.getElementById('custom-usage').value = '';
+        document.getElementById('custom-instrument').value = '';
+        document.getElementById('custom-theme').value = '';
+
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('youtube-result').style.display = 'none';
+        
+        hideError();
+        generatedPrompt = '';
+        youtubePackage = {};
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        setTimeout(() => {
+            alert('✅ 모든 선택이 초기화되었습니다.');
+        }, 300);
+    }
+
+    function generatePromptText() {
+        const theme = document.getElementById('custom-theme').value.trim() || selections.theme;
+        const usage = document.getElementById('custom-usage').value.trim() || selections.usage || "일반 감상";
+        const instrument = document.getElementById('custom-instrument').value.trim() || selections.instrument || "자유롭게";
+        const bpm = selections.bpm || "자유롭게";
+
+        const promptText = `[명령어] 
+Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으로 작성해주세요:
+
+제목: [여기에 제목]
+스타일: [여기에 영문 태그]
+가사: [여기에 가사 전체]
+
+[조건]
+- 용도: ${usage}
+- 장르: ${selections.genre}
+- 분위기: ${selections.mood}
+- 보컬: ${selections.vocal}
+- 주요 악기: ${instrument}
+- 속도(BPM): ${bpm}
+- 가사 언어: ${selections.lang}
+- 주제: ${theme}
+
+[특별 지시사항]
+1. **제목**: 청취자의 관심을 끌 수 있는 매력적이고 클릭을 유도하는 제목으로 작성하세요.
+
+2. **스타일 태그**: Suno AI가 이해할 수 있는 전문 음악 용어를 영어로 작성하세요. 
+   예시: "City Pop, Synth Wave, Dreamy, Female Vocal, 80s"
+
+3. **가사 구조**: 4분 분량의 풀버전을 위해 다음 구조를 참고하세요:
+   - [Intro] (인트로)
+   - [Verse 1] (1절)
+   - [Pre-Chorus] (프리코러스)
+   - [Chorus] (후렴)
+   - [Instrumental Solo] (간주)
+   - [Verse 2] (2절)
+   - [Pre-Chorus] (프리코러스)
+   - [Chorus] (후렴)
+   - [Bridge] (브릿지)
+   - [Final Chorus] (마지막 후렴)
+   - [Outro] (아웃트로)
+
+4. **가사 작성 시 주의사항**:
+   - 간주(Instrumental Solo) 구간을 전략적으로 배치
+   - 각 섹션은 충분한 분량으로 작성
+   - 반복되는 후렴구는 일관성 유지
+   - 감정의 흐름이 자연스럽게 이어지도록 작성
+
+반드시 위 형식(제목: / 스타일: / 가사:)을 정확히 지켜주세요.`;
+
+        return promptText;
+    }
+
+    function generateYoutubePrompt() {
+        const theme = document.getElementById('custom-theme').value.trim() || selections.theme;
+        const usage = document.getElementById('custom-usage').value.trim() || selections.usage || "일반 감상";
+        const instrument = document.getElementById('custom-instrument').value.trim() || selections.instrument || "자유롭게";
+        const bpm = selections.bpm || "자유롭게";
+
+        const youtubePrompt = `[미션]
+유튜브 음악 채널용 글로벌 업로드 패키지를 생성해주세요.
+
+[선택된 변수]
+- 장르: ${selections.genre}
+- 분위기: ${selections.mood}
+- 보컬: ${selections.vocal}
+- 용도: ${usage}
+- 악기: ${instrument}
+- 속도(BPM): ${bpm}
+- 가사 언어: ${selections.lang}
+- 주제: ${theme}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 전체 구성 요소
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## PART 1: 10곡 개별 프롬프트 생성
+
+위 변수를 기반으로 **10개의 서로 다른 곡**을 만들어주세요.
+각 곡마다 다음을 포함해주세요:
+
+**곡 1:**
+제목: [VideoBERT 알고리즘 적용 - 시각적 묘사가 뛰어난 제목]
+스타일 태그: [Suno AI용 영문 전문 음악 용어]
+가사: [4분 분량 풀버전 - Intro/Verse/Chorus/Bridge/Outro 구조]
+
+**곡 2:**
+(동일한 형식으로 10곡까지)
+
+**중요:**
+- 10곡은 모두 같은 장르(${selections.genre})와 분위기(${selections.mood})를 유지하되
+- 각 곡의 세부 주제, 가사 내용, 템포는 다양하게 변화
+- 제목은 각각 독창적이고 클릭을 유도하는 내용으로
+- 스타일 태그는 Suno AI가 이해할 수 있는 영문 음악 용어로
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## PART 2: 6개 국어 유튜브 업로드 세트
+
+각 언어별로 다음을 생성해주세요:
+
+### 🇰🇷 한국어 (Korean)
+
+**📌 영상 제목:**
+[플레이리스트 전체를 대표하는 매력적인 제목 - 40자 이내, SEO 최적화]
+
+**📝 영상 설명란:**
+[플레이리스트 소개 2-3문장]
+
+⏱️ 타임스탬프:
+00:00 [곡1 제목] - [한 줄 설명]
+04:15 [곡2 제목] - [한 줄 설명]
+08:30 [곡3 제목] - [한 줄 설명]
+12:45 [곡4 제목] - [한 줄 설명]
+17:00 [곡5 제목] - [한 줄 설명]
+21:15 [곡6 제목] - [한 줄 설명]
+25:30 [곡7 제목] - [한 줄 설명]
+29:45 [곡8 제목] - [한 줄 설명]
+34:00 [곡9 제목] - [한 줄 설명]
+38:15 [곡10 제목] - [한 줄 설명]
+
+🎵 이 재생목록이 마음에 드셨다면 구독과 좋아요 부탁드립니다!
+새로운 음악이 매주 업데이트됩니다.
+
+© All rights reserved. Unauthorized copying prohibited.
+🎧 Music for [${usage}]
+
+**#️⃣ 해시태그:**
+[15-20개의 관련 해시태그 - 장르, 분위기, 용도 관련]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 🇺🇸 English
+
+**📌 Video Title:**
+[Attractive playlist title - SEO optimized, under 60 characters]
+
+**📝 Video Description:**
+[Playlist introduction in 2-3 sentences]
+
+⏱️ Timestamps:
+00:00 [Song 1 Title] - [One line description]
+04:15 [Song 2 Title] - [One line description]
+08:30 [Song 3 Title] - [One line description]
+12:45 [Song 4 Title] - [One line description]
+17:00 [Song 5 Title] - [One line description]
+21:15 [Song 6 Title] - [One line description]
+25:30 [Song 7 Title] - [One line description]
+29:45 [Song 8 Title] - [One line description]
+34:00 [Song 9 Title] - [One line description]
+38:15 [Song 10 Title] - [One line description]
+
+🎵 If you enjoyed this playlist, please subscribe and like!
+New music updated weekly.
+
+© All rights reserved. Unauthorized copying prohibited.
+🎧 Music for [${usage}]
+
+**#️⃣ Hashtags:**
+[15-20 relevant hashtags - genre, mood, purpose related]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 🇯🇵 日本語 (Japanese)
+
+**📌 動画タイトル:**
+[魅力的なプレイリストタイトル - SEO最適化、40文字以内]
+
+**📝 動画説明:**
+[プレイリスト紹介 2-3文]
+
+⏱️ タイムスタンプ:
+00:00 [曲1のタイトル] - [一行説明]
+04:15 [曲2のタイトル] - [一行説明]
+08:30 [曲3のタイトル] - [一行説明]
+12:45 [曲4のタイトル] - [一行説明]
+17:00 [曲5のタイトル] - [一行説明]
+21:15 [曲6のタイトル] - [一行説明]
+25:30 [曲7のタイトル] - [一行説明]
+29:45 [曲8のタイトル] - [一行説明]
+34:00 [曲9のタイトル] - [一行説明]
+38:15 [曲10のタイトル] - [一行説明]
+
+🎵 このプレイリストが気に入ったら、チャンネル登録といいね👍をお願いします！
+毎週新しい音楽を更新しています。
+
+© All rights reserved. Unauthorized copying prohibited.
+🎧 Music for [${usage}]
+
+**#️⃣ ハッシュタグ:**
+[15-20個の関連ハッシュタグ]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 🇪🇸 Español (Spanish)
+
+**📌 Título del Video:**
+[Título atractivo de la lista de reproducción - SEO optimizado, menos de 60 caracteres]
+
+**📝 Descripción del Video:**
+[Introducción de la lista de reproducción en 2-3 oraciones]
+
+⏱️ Marcas de Tiempo:
+00:00 [Título de Canción 1] - [Descripción de una línea]
+04:15 [Título de Canción 2] - [Descripción de una línea]
+08:30 [Título de Canción 3] - [Descripción de una línea]
+12:45 [Título de Canción 4] - [Descripción de una línea]
+17:00 [Título de Canción 5] - [Descripción de una línea]
+21:15 [Título de Canción 6] - [Descripción de una línea]
+25:30 [Título de Canción 7] - [Descripción de una línea]
+29:45 [Título de Canción 8] - [Descripción de una línea]
+34:00 [Título de Canción 9] - [Descripción de una línea]
+38:15 [Título de Canción 10] - [Descripción de una línea]
+
+🎵 Si disfrutaste esta lista de reproducción, ¡suscríbete y dale me gusta!
+Nueva música actualizada semanalmente.
+
+© Todos los derechos reservados. Prohibida la copia no autorizada.
+🎧 Música para [${usage}]
+
+**#️⃣ Hashtags:**
+[15-20 hashtags relevantes]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 🇧🇷 Português (Portuguese)
+
+**📌 Título do Vídeo:**
+[Título atraente da playlist - SEO otimizado, menos de 60 caracteres]
+
+**📝 Descrição do Vídeo:**
+[Introdução da playlist em 2-3 frases]
+
+⏱️ Marcadores de Tempo:
+00:00 [Título da Música 1] - [Descrição de uma linha]
+04:15 [Título da Música 2] - [Descrição de uma linha]
+08:30 [Título da Música 3] - [Descrição de uma linha]
+12:45 [Título da Música 4] - [Descrição de uma linha]
+17:00 [Título da Música 5] - [Descrição de uma linha]
+21:15 [Título da Música 6] - [Descrição de uma linha]
+25:30 [Título da Música 7] - [Descrição de uma linha]
+29:45 [Título da Música 8] - [Descrição de uma linha]
+34:00 [Título da Música 9] - [Descrição de uma linha]
+38:15 [Título da Música 10] - [Descrição de uma linha]
+
+🎵 Se você gostou desta playlist, inscreva-se e curta!
+Novas músicas atualizadas semanalmente.
+
+© Todos os direitos reservados. Cópia não autorizada proibida.
+🎧 Música para [${usage}]
+
+**#️⃣ Hashtags:**
+[15-20 hashtags relevantes]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 🇮🇳 हिन्दी (Hindi)
+
+**📌 वीडियो शीर्षक:**
+[आकर्षक प्लेलिस्ट शीर्षक - SEO अनुकूलित]
+
+**📝 वीडियो विवरण:**
+[2-3 वाक्यों में प्लेलिस्ट परिचय]
+
+⏱️ टाइमस्टैम्प:
+00:00 [गीत 1 शीर्षक] - [एक पंक्ति विवरण]
+04:15 [गीत 2 शीर्षक] - [एक पंक्ति विवरण]
+08:30 [गीत 3 शीर्षक] - [एक पंक्ति विवरण]
+12:45 [गीत 4 शीर्षक] - [एक पंक्ति विवरण]
+17:00 [गीत 5 शीर्षक] - [एक पंक्ति विवरण]
+21:15 [गीत 6 शीर्षक] - [एक पंक्ति विवरण]
+25:30 [गीत 7 शीर्षक] - [एक पंक्ति विवरण]
+29:45 [गीत 8 शीर्षक] - [एक पंक्ति विवरण]
+34:00 [गीत 9 शीर्षक] - [एक पंक्ति विवरण]
+38:15 [गीत 10 शीर्षक] - [एक पंक्ति विवरण]
+
+🎵 अगर आपको यह प्लेलिस्ट पसंद आई, तो कृपया सब्सक्राइब और लाइक करें!
+हर सप्ताह नया संगीत अपडेट किया जाता है।
+
+© सर्वाधिकार सुरक्षित। अनधिकृत प्रतिलिपि निषिद्ध।
+🎧 Music for [${usage}]
+
+**#️⃣ हैशटैग:**
+[15-20 संबंधित हैशटैग]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[중요 지시사항]
+1. 10곡의 개별 프롬프트는 각각 독립적이고 완성도 있게 작성
+2. 각 언어의 제목은 단순 번역이 아닌, 해당 문화권에 맞는 자연스러운 표현 사용
+3. 타임스탬프의 곡 제목은 각 언어로 번역하되, 원곡의 느낌 유지
+4. 해시태그는 각 언어권에서 실제로 검색되는 키워드 포함
+5. VideoBERT 알고리즘을 적용하여 시각적으로 상상 가능한 제목 작성
+6. SEO를 고려하여 검색 최적화된 키워드 배치
+
+위 형식을 정확히 지켜서 전체 패키지를 완성해주세요.`;
+
+        return youtubePrompt;
+    }
+
+    function handleGenerate() {
+        const errors = validateSelections();
+        if (errors.length > 0) {
+            showError(`❌ 다음 항목을 선택해주세요: ${errors.join(', ')}`);
+            return;
+        }
+
+        hideError();
+        generatedPrompt = generatePromptText();
+
+        const resultDiv = document.getElementById('result');
+        const outputContent = document.getElementById('output-content');
+        
+        outputContent.textContent = generatedPrompt;
+        resultDiv.style.display = 'block';
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function handleYoutubeGenerate() {
+        const errors = validateSelections();
+        if (errors.length > 0) {
+            showError(`❌ 다음 항목을 선택해주세요: ${errors.join(', ')}`);
+            return;
+        }
+
+        hideError();
+        const youtubePrompt = generateYoutubePrompt();
+
+        const resultDiv = document.getElementById('result');
+        const outputContent = document.getElementById('output-content');
+        
+        outputContent.textContent = youtubePrompt;
+        resultDiv.style.display = 'block';
+
+        alert('📋 프롬프트가 생성되었습니다!\n\n이 프롬프트를 Google AI Studio에 붙여넣으면\n6개국어 유튜브 패키지가 자동으로 생성됩니다.\n\n생성된 결과를 다시 이 페이지에 붙여넣으면\n언어별로 정리하여 보여드립니다.');
+        
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        displayYoutubePackage();
+    }
+
+    function displayYoutubePackage() {
+        const youtubeResult = document.getElementById('youtube-result');
+        const tabsContainer = document.getElementById('lang-tabs');
+        const contentContainer = document.getElementById('lang-content-container');
+
+        tabsContainer.innerHTML = '';
+        contentContainer.innerHTML = '';
+
+        const timestampExample = `00:00 Song 1 - Description
+04:15 Song 2 - Description
+08:30 Song 3 - Description
+12:45 Song 4 - Description
+17:00 Song 5 - Description
+21:15 Song 6 - Description
+25:30 Song 7 - Description
+29:45 Song 8 - Description
+34:00 Song 9 - Description
+38:15 Song 10 - Description`;
+
+        languages.forEach((lang, index) => {
+            const tabBtn = document.createElement('button');
+            tabBtn.className = 'tab-btn' + (index === 0 ? ' active-tab' : '');
+            tabBtn.innerHTML = `${lang.flag} ${lang.name}`;
+            tabBtn.onclick = () => switchTab(lang.code);
+            tabsContainer.appendChild(tabBtn);
+
+            const tabContent = document.createElement('div');
+            tabContent.className = 'tab-content' + (index === 0 ? ' active-content' : '');
+            tabContent.id = `tab-${lang.code}`;
+            
+            tabContent.innerHTML = `
+                <div class="lang-section">
+                    <div class="lang-title">
+                        <span class="lang-flag">${lang.flag}</span>
+                        <span>${lang.name} 업로드 세트</span>
+                    </div>
+
+                    <div class="content-block">
+                        <div class="content-label">📌 영상 제목 (Video Title)</div>
+                        <div class="content-text" id="title-${lang.code}">
+✨ Google AI Studio에서 생성된 제목이 여기 표시됩니다
+
+[예시]
+${lang.code === 'ko' ? '🌙 밤하늘 아래 감성 음악 모음 | 로파이 힙합 플레이리스트' : 
+  lang.code === 'en' ? '🌙 Emotional Music Under the Night Sky | Lo-fi Hip Hop Playlist' :
+  lang.code === 'ja' ? '🌙 夜空の下で聴く感性音楽集 | ローファイヒップホッププレイリスト' :
+  lang.code === 'es' ? '🌙 Música Emocional Bajo el Cielo Nocturno | Lista de Reproducción Lo-fi Hip Hop' :
+  lang.code === 'pt' ? '🌙 Música Emocional Sob o Céu Noturno | Playlist Lo-fi Hip Hop' :
+  '🌙 रात के आसमान के नीचे भावनात्मक संगीत | लो-फाई हिप हॉप प्लेलिस्ट'}
+                        </div>
+                        <button class="copy-lang-btn" onclick="copyLangContent('title-${lang.code}', this)">📌 제목 복사</button>
+                    </div>
+
+                    <div class="timestamp-section">
+                        <div class="timestamp-title">⏱️ 타임스탬프 (10곡 플레이리스트)</div>
+                        <div class="content-text" id="timestamp-${lang.code}">${timestampExample}</div>
+                        <button class="copy-lang-btn" onclick="copyLangContent('timestamp-${lang.code}', this)">⏱️ 타임스탬프 복사</button>
+                    </div>
+
+                    <div class="content-block">
+                        <div class="content-label">📝 유튜브 설명란 (Description)</div>
+                        <div class="content-text" id="description-${lang.code}">
+Google AI Studio에서 생성된 완전한 설명란이 여기 표시됩니다.
+
+[포함 내용]
+- 플레이리스트 소개 (2-3문장)
+- 10곡 타임스탬프 전체
+- 구독 유도 문구
+- 저작권 표기
+
+[예시 구조]
+${lang.code === 'ko' ? 
+`밤하늘 아래에서 듣기 좋은 감성적인 로파이 힙합 음악을 모았습니다.
+공부, 작업, 휴식 시간에 완벽한 배경 음악입니다.
+
+⏱️ 타임스탬프:
+00:00 곡1 - 설명
+04:15 곡2 - 설명
+...
+
+🎵 이 재생목록이 마음에 드셨다면 구독과 좋아요 부탁드립니다!
+새로운 음악이 매주 업데이트됩니다.
+
+© All rights reserved. Unauthorized copying prohibited.` :
+lang.code === 'en' ?
+`A collection of emotional lo-fi hip hop music perfect for listening under the night sky.
+Perfect background music for studying, working, or relaxing.
+
+⏱️ Timestamps:
+00:00 Song 1 - Description
+04:15 Song 2 - Description
+...
+
+🎵 If you enjoyed this playlist, please subscribe and like!
+New music updated weekly.
+
+© All rights reserved. Unauthorized copying prohibited.` :
+'AI가 생성한 해당 언어의 설명이 표시됩니다'}
+                        </div>
+                        <button class="copy-lang-btn" onclick="copyLangContent('description-${lang.code}', this)">📝 설명란 복사</button>
+                    </div>
+
+                    <div class="content-block">
+                        <div class="content-label">#️⃣ 해시태그 (Hashtags)</div>
+                        <div class="content-text" id="hashtags-${lang.code}">
+${lang.code === 'ko' ? 
+'#로파이 #힙합 #감성음악 #공부음악 #작업음악 #집중음악 #밤음악 #편안한음악 #배경음악 #플레이리스트 #chillmusic #studymusic #relaxing #lofi #hiphop' :
+lang.code === 'en' ?
+'#lofi #hiphop #chillmusic #studymusic #workmusic #relaxingmusic #playlist #backgroundmusic #nightmusic #aesthetic #beats #chill #relax #focus #concentration' :
+'#해시태그1 #해시태그2 #해시태그3 ...'}
+                        </div>
+                        <button class="copy-lang-btn" onclick="copyLangContent('hashtags-${lang.code}', this)">#️⃣ 해시태그 복사</button>
+                    </div>
+
+                    <button class="copy-lang-btn" onclick="copyAllLangContent('${lang.code}', this)" 
+                            style="background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%); font-size: 1.1em; padding: 14px 28px; margin-top: 10px;">
+                        📦 ${lang.name} 전체 업로드 세트 복사
+                    </button>
+                </div>
+            `;
+            
+            contentContainer.appendChild(tabContent);
+        });
+
+        youtubeResult.style.display = 'block';
+        setTimeout(() => {
+            youtubeResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+
+    function switchTab(langCode) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active-tab');
+        });
+
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active-content');
+        });
+
+        const selectedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => 
+            btn.textContent.includes(languages.find(l => l.code === langCode).name)
+        );
+        if (selectedBtn) selectedBtn.classList.add('active-tab');
+
+        const selectedContent = document.getElementById(`tab-${langCode}`);
+        if (selectedContent) selectedContent.classList.add('active-content');
+    }
+
+    window.copyLangContent = async function(elementId, button) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const text = element.textContent;
+        
+        try {
+            await navigator.clipboard.writeText(text);
+            const originalText = button.textContent;
+            button.classList.add('copied');
+            button.textContent = '✓ 복사 완료!';
+            
+            setTimeout(() => {
+                button.classList.remove('copied');
+                button.textContent = originalText;
+            }, 2000);
+        } catch (err) {
+            alert('복사 실패! 수동으로 복사해주세요.');
+        }
+    };
+
+    window.copyAllLangContent = async function(langCode, button) {
+        const title = document.getElementById(`title-${langCode}`).textContent;
+        const timestamp = document.getElementById(`timestamp-${langCode}`).textContent;
+        const description = document.getElementById(`description-${langCode}`).textContent;
+        const hashtags = document.getElementById(`hashtags-${langCode}`).textContent;
+
+        const fullPackage = `📌 제목:
+${title}
+
+⏱️ 타임스탬프:
+${timestamp}
+
+📝 설명란:
+${description}
+
+#️⃣ 해시태그:
+${hashtags}`;
+
+        try {
+            await navigator.clipboard.writeText(fullPackage);
+            const originalText = button.textContent;
+            button.classList.add('copied');
+            button.textContent = '✓ 전체 복사 완료!';
+            
+            setTimeout(() => {
+                button.classList.remove('copied');
+                button.textContent = originalText;
+            }, 2000);
+        } catch (err) {
+            alert('복사 실패! 수동으로 복사해주세요.');
+        }
+    };
+
+    // 초기화
+    initButtonGroup('genre-btns', data.genres, 'genre');
+    initButtonGroup('mood-btns', data.moods, 'mood');
+    initButtonGroup('vocal-btns', data.vocals, 'vocal');
+    initButtonGroup('usage-btns', data.usages, 'usage');
+    initButtonGroup('instrument-btns', data.instruments, 'instrument');
+    initButtonGroup('bpm-btns', data.bpms, 'bpm');
+    initButtonGroup('lang-btns', data.langs, 'lang');
+    initButtonGroup('theme-btns', data.themes, 'theme');
+
+    document.getElementById('generate-btn').addEventListener('click', handleGenerate);
+    document.getElementById('youtube-btn').addEventListener('click', handleYoutubeGenerate);
+    document.getElementById('reset-btn').addEventListener('click', resetAll);
+    document.getElementById('copy-all').addEventListener('click', () => {
+        copyToClipboard(generatedPrompt, 'copy-all', '복사 완료!');
+    });
+    document.getElementById('custom-theme').addEventListener('input', hideError);
+</script>
+</body>
+</html>
