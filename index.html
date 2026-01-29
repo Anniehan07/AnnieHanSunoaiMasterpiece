@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suno AI 프롬프트 마스터 - 애니한tv</title>
+    <title>🎵 Suno AI 프롬프트 마스터 - 애니한tv</title>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -124,17 +124,6 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .instruction-box {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 35px;
-            border-radius: 25px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            animation: fadeInUp 0.8s ease-out 0.2s backwards;
-        }
-
         .api-key-section {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
@@ -144,6 +133,17 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
             border: 2px solid var(--accent);
             animation: fadeInUp 0.8s ease-out 0.15s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .api-key-section h3 {
@@ -227,15 +227,15 @@
             display: block;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
         }
 
         .instruction-box h3 {
@@ -273,6 +273,7 @@
         .step:nth-child(6) { animation-delay: 0.35s; }
         .step:nth-child(7) { animation-delay: 0.4s; }
         .step:nth-child(8) { animation-delay: 0.45s; }
+        .step:nth-child(9) { animation-delay: 0.5s; }
 
         .step:hover {
             transform: translateY(-5px);
@@ -321,19 +322,6 @@
             color: #495057;
             position: relative;
             overflow: hidden;
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: var(--gradient-start);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
         }
 
         button:hover:not(:disabled) {
@@ -453,13 +441,23 @@
             display: block;
         }
 
-        #result, #youtube-result {
+        #result {
             margin-top: 50px;
             animation: fadeInUp 0.6s ease-out;
+            display: none;
         }
 
-        #result {
-            display: none;
+        .result-header {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
         }
 
         .copy-section {
@@ -467,6 +465,8 @@
             gap: 15px;
             margin-bottom: 25px;
             flex-wrap: wrap;
+            padding: 20px;
+            background: white;
         }
 
         .copy-btn {
@@ -503,179 +503,31 @@
             white-space: pre-wrap;
             background: white;
             padding: 30px;
-            border-radius: 20px;
-            border: 2px solid var(--accent);
+            border-radius: 0 0 20px 20px;
             line-height: 2;
             font-size: 1.05em;
             color: #333;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            max-height: 600px;
+            overflow-y: auto;
         }
 
-        /* 글로벌 유튜브 패키지 스타일 */
-        #youtube-result {
-            display: none;
-        }
-
-        .youtube-header {
-            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 25px 25px 0 0;
+        .loading {
             text-align: center;
-            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3);
-        }
-
-        .youtube-header h2 {
-            font-family: 'Gowun Batang', serif;
-            font-size: 2.5em;
-            margin-bottom: 15px;
-        }
-
-        .youtube-header p {
+            padding: 50px;
             font-size: 1.2em;
-            opacity: 0.95;
-            font-weight: 300;
+            color: #666;
         }
 
-        .youtube-content {
-            background: white;
-            border-radius: 0 0 25px 25px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
         }
 
-        .tabs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 20px;
-        }
-
-        .tab-btn {
-            padding: 14px 28px;
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            color: #495057;
-            font-size: 1.05em;
-        }
-
-        .tab-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .tab-btn.active-tab {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .tab-content.active-content {
-            display: block;
-        }
-
-        .lang-section {
-            padding: 35px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 20px;
-            border: 2px solid #e9ecef;
-        }
-
-        .lang-title {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: var(--gradient-start);
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .lang-flag {
-            font-size: 2em;
-        }
-
-        .content-block {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 2px solid #f1f3f5;
-            transition: all 0.3s ease;
-        }
-
-        .content-block:hover {
-            border-color: var(--gradient-start);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
-        }
-
-        .content-label {
-            font-weight: 700;
-            color: #495057;
-            margin-bottom: 12px;
-            font-size: 1.1em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .content-text {
-            color: #212529;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
-
-        .timestamp-section {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
-            border: 2px solid var(--warning);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(255, 211, 42, 0.2);
-        }
-
-        .timestamp-title {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #856404;
-            margin-bottom: 15px;
-        }
-
-        .copy-lang-btn {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 0.95em;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-right: 12px;
-            margin-top: 12px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .copy-lang-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .copy-lang-btn.copied {
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-            animation: pulse 0.5s;
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
         }
 
         /* 반응형 디자인 */
@@ -691,14 +543,6 @@
             .main-btn {
                 font-size: 1.2em;
                 padding: 20px;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .tab-btn {
-                width: 100%;
             }
         }
 
@@ -725,7 +569,7 @@
 <div class="container">
     <div class="header">
         <h1>🎵 Suno AI 프롬프트 마스터</h1>
-        <p class="subtitle">애니한 익스클루시브 : Suno 프롬프트 엔진 & VideoBERT 알고리즘</p>
+        <p class="subtitle">✨ 애니한 익스클루시브 : 108만 유튜버의 노하우 ✨</p>
     </div>
     
     <div class="header-controls">
@@ -745,10 +589,10 @@
     <div class="instruction-box">
         <h3>📌 사용 안내</h3>
         <ol>
-            <li>위에 Google AI Studio API 키를 입력하고 저장하세요</li>
-            <li>아래 옵션들을 선택하여 원하는 음악 스타일을 설정하세요</li>
-            <li><strong>"프롬프트 & 가사 생성하기"</strong> 버튼을 클릭하면 AI가 자동으로 제목, 스타일 태그, 가사를 생성합니다</li>
-            <li><strong>"글로벌 유튜브 패키지 생성"</strong> 버튼으로 6개국어 제목, 설명, 해시태그를 한번에 생성하세요</li>
+            <li>🔑 위에 Google AI Studio API 키를 입력하고 저장하세요</li>
+            <li>🎨 아래 옵션들을 선택하여 원하는 음악 스타일을 설정하세요</li>
+            <li>🎵 <strong>"프롬프트 & 가사 생성하기"</strong> 버튼을 클릭하면 AI가 자동으로 1곡을 완성합니다</li>
+            <li>🌍 <strong>"글로벌 유튜브 패키지 생성"</strong> 버튼으로 10곡 + 6개국어 업로드 세트를 한번에 생성하세요</li>
         </ol>
     </div>
 
@@ -785,12 +629,17 @@
     </div>
     
     <div class="step required">
-        <span class="step-title">🌐 7. 가사 언어 설정 <span class="step-subtitle">(글로벌 소통)</span></span>
+        <span class="step-title">👥 7. 타겟 연령대 선택 <span class="step-subtitle">(청중의 공감)</span></span>
+        <div class="btn-group" id="age-group-btns"></div>
+    </div>
+    
+    <div class="step required">
+        <span class="step-title">🌐 8. 가사 언어 설정 <span class="step-subtitle">(글로벌 소통)</span></span>
         <div class="btn-group" id="lang-btns"></div>
     </div>
     
     <div class="step required">
-        <span class="step-title">📝 8. 가사 주제 및 요청 <span class="step-subtitle">(창작의 핵심)</span></span>
+        <span class="step-title">📝 9. 가사 주제 및 요청 <span class="step-subtitle">(창작의 핵심)</span></span>
         <div class="btn-group" id="theme-btns"></div>
         <textarea id="custom-theme" placeholder="가사 주제를 자유롭게 적어주세요. (필수)"></textarea>
     </div>
@@ -798,67 +647,88 @@
     <div class="error-message" id="error-message"></div>
 
     <button class="main-btn" id="generate-btn">🎵 프롬프트 & 가사 생성하기 (AI 자동 생성)</button>
-    <button class="main-btn youtube-btn" id="youtube-btn">🌍 글로벌 유튜브 패키지 생성하기 (6개국어)</button>
+    <button class="main-btn youtube-btn" id="youtube-btn">🌍 글로벌 유튜브 패키지 생성하기 (10곡 + 6개국어)</button>
 
     <div id="result">
+        <div class="result-header">
+            <h2 id="result-title">🎼 AI 생성 결과</h2>
+            <p id="result-subtitle">Suno AI에 바로 사용하세요!</p>
+        </div>
         <div class="copy-section">
-            <button class="copy-btn" id="copy-all">📋 전체 프롬프트 복사</button>
+            <button class="copy-btn" id="copy-all">📋 전체 복사</button>
         </div>
         <div class="output-box" id="output-content"></div>
-    </div>
-
-    <div id="youtube-result">
-        <div class="youtube-header">
-            <h2>🌍 글로벌 유튜브 업로드 패키지</h2>
-            <p>VideoBERT 알고리즘 적용 - 6개국어 자동 번역</p>
-        </div>
-        <div class="youtube-content">
-            <div class="tabs" id="lang-tabs"></div>
-            <div id="lang-content-container"></div>
-        </div>
     </div>
 </div>
 
 <script>
     const data = {
         genres: [
-            "시티팝(City Pop)", "로파이(Lo-fi)", "칠웨이브", "K-록", "합창/중창", 
-            "명상/치유", "CCM/찬양", "K-pop", "발라드", "재즈", "팝", "힙합", 
-            "뉴에이지", "앰비언트", "트로트", "블루스", "컨트리", "포크", "레게", 
-            "디스코", "록", "전자음악", "R&B", "소울", "신스팝", "드림 팝", 
-            "인디팝", "가스펠", "스윙", "라틴", "이지리스닝", "자장가", "동요", "캐롤"
+            "🎹 시티팝(City Pop)", "🎧 로파이(Lo-fi)", "🌊 칠웨이브", "🎸 K-록", "👥 합창/중창", 
+            "🧘 명상/치유", "✝️ CCM/찬양", "💫 K-pop", "💔 발라드", "🎺 재즈", "🎤 팝", "🎵 힙합", 
+            "🌌 뉴에이지", "🌫️ 앰비언트", "🎶 트로트", "🎷 블루스", "🤠 컨트리", "🪕 포크", "🏝️ 레게", 
+            "✨ 디스코", "🎸 록", "🔊 전자음악", "🎼 R&B", "🎹 소울", "🎛️ 신스팝", "☁️ 드림 팝", 
+            "🎨 인디팝", "🙏 가스펠", "🎺 스윙", "💃 라틴", "🎵 이지리스닝", "👶 자장가", "🧸 동요", "🎄 캐롤"
         ],
         moods: [
-            "잔잔한 (고요한)", "깊은 슬픔", "우울한 새벽", "경건하고 은혜로운", 
-            "따스한 위로", "순수한 평화", "포근한 구름", "에너지 폭발", 
-            "로맨틱 감성", "일몰같은", "우주 같은", "다크하고 강렬", 
-            "시원한 바람", "강력한 드라이브", "도전적인", "웅장한 대서사시", "귀여운"
+            "🌙 잔잔한 (고요한)", "😢 깊은 슬픔", "🌃 우울한 새벽", "🙏 경건하고 은혜로운", 
+            "🤗 따스한 위로", "☮️ 순수한 평화", "☁️ 포근한 구름", "⚡ 에너지 폭발", 
+            "💕 로맨틱 감성", "🌅 일몰같은", "🌌 우주 같은", "🖤 다크하고 강렬", 
+            "🍃 시원한 바람", "🚗 강력한 드라이브", "💪 도전적인", "🏔️ 웅장한 대서사시", "🥰 귀여운"
         ],
         vocals: [
-            "어린이 합창단", "어른 합창단", "맑고 깨끗한 여성", "에테리얼 여성", 
-            "로맨틱 보컬", "허스키 남성", "소년 보컬", "맑은 소녀 보컬", 
-            "열정적인 남자", "코러스 합창", "보코더 효과", "속삭임", "랩", 
-            "오페라틱", "공기반 사운드반", "가사없는(Instrumental)"
+            "👶 어린이 합창단 (Children's Choir)", 
+            "👥 어른 합창단 (Adult Choir)", 
+            "👩 맑고 깨끗한 여성 보컬 (Female - Clear)", 
+            "✨ 에테리얼 여성 보컬 (Female - Ethereal)", 
+            "💕 로맨틱 여성 보컬 (Female - Romantic)", 
+            "🎙️ 허스키 남성 보컬 (Male - Husky)", 
+            "👦 소년 보컬 (Boy Vocal)", 
+            "👧 맑은 소녀 보컬 (Girl Vocal)", 
+            "🔥 열정적인 남성 보컬 (Male - Passionate)", 
+            "🎵 남녀 코러스 합창 (Mixed Chorus)", 
+            "🤖 보코더 효과 (Vocoder)", 
+            "🤫 속삭이는 여성 (Female - Whisper)", 
+            "🎤 랩 (남성 Rap)", 
+            "🎤 랩 (여성 Rap)",
+            "🎭 오페라틱 (남성 Opera)", 
+            "🎭 오페라틱 (여성 Opera)",
+            "🌬️ 공기반 사운드반 (Breathy)", 
+            "🎼 가사없는 연주곡 (Instrumental)"
         ],
         usages: [
-            "유튜브 브이로그 BGM", "게임 방송 배경음", "공부/집중력 향상", 
-            "운동/피트니스", "숙면/명상", "카페 분위기", "감성 쇼츠/틱톡", 
-            "교회 예배/묵상"
+            "📹 유튜브 브이로그 BGM", "🎮 게임 방송 배경음", "📚 공부/집중력 향상", 
+            "💪 운동/피트니스", "😴 숙면/명상", "☕ 카페 분위기", "📱 감성 쇼츠/틱톡", 
+            "⛪ 교회 예배/묵상"
         ],
         instruments: [
-            "그랜드 피아노", "어쿠스틱 기타", "일렉 기타", "오르골", "색소폰", 
-            "바이올린", "첼로", "싱잉볼", "신디사이저"
+            "🎹 그랜드 피아노", "🎸 어쿠스틱 기타", "⚡ 일렉 기타", "🎵 오르골", "🎷 색소폰", 
+            "🎻 바이올린", "🎻 첼로", "🔔 싱잉볼", "🎛️ 신디사이저"
         ],
         bpms: [
-            "매우 느림 (60-80 BPM)", "느림 (80-100 BPM)", "보통 (100-120 BPM)", 
-            "빠름 (120-140 BPM)", "매우 빠름 (140-160 BPM)", "초고속 (160+ BPM)"
+            "😴 초저속 (40-50 BPM) - 깊은 수면/명상",
+            "🌙 매우 느림 (50-70 BPM) - 자장가/휴식", 
+            "🧘 느림 (70-90 BPM) - 평온한 호흡",
+            "🚶 보통 (90-110 BPM) - 편안한 걷기", 
+            "😊 약간 빠름 (110-130 BPM) - 경쾌한 분위기",
+            "🏃 빠름 (130-150 BPM) - 에너지 넘치는", 
+            "💪 매우 빠름 (150-170 BPM) - 운동/댄스",
+            "⚡ 초고속 (170+ BPM) - 격렬한 활동"
         ],
-        langs: ["한국어(Korean)", "영어(English)", "한국어+영어 섞어서"],
+        langs: ["🇰🇷 한국어(Korean)", "🇺🇸 영어(English)", "🌏 한국어+영어 섞어서"],
+        ageGroups: [
+            "👶 유아 (0-7세) - 동요/자장가 느낌",
+            "🎒 10대 (청소년) - 에너지 넘치는 감성",
+            "💼 20대 (청춘) - 트렌디하고 세련된",
+            "👔 30-40대 (직장인/부모) - 공감되는 일상",
+            "🎩 50-60대 (시니어) - 깊이있고 성숙한",
+            "🌍 전 연령대 (All Ages) - 보편적 감성"
+        ],
         themes: [
-            "첫사랑", "자장가", "새벽 묵상", "이별의 아픔", "재회", "짝사랑", 
-            "자기 사랑", "용기(Antifragile)", "갓생", "주체적 나", "실패와 극복", 
-            "자신감 회복", "향수(Nostalgia)", "비 오는 날", "여행", "감사와 기도", 
-            "가사없는(연주곡)", "크리스마스"
+            "💕 첫사랑", "👶 자장가", "🌅 새벽 묵상", "💔 이별의 아픔", "🤝 재회", "😊 짝사랑", 
+            "💪 자기 사랑", "🔥 용기(Antifragile)", "✨ 갓생", "👤 주체적 나", "🎯 실패와 극복", 
+            "💎 자신감 회복", "🏠 향수(Nostalgia)", "🌧️ 비 오는 날", "✈️ 여행", "🙏 감사와 기도", 
+            "🎼 가사없는(연주곡)", "🎄 크리스마스"
         ]
     };
 
@@ -878,16 +748,24 @@
         usage: null,
         instrument: null,
         bpm: null,
+        ageGroup: null,
         lang: null,
         theme: null
     };
 
     let generatedPrompt = "";
-    let youtubePackage = {};
     let apiKey = localStorage.getItem('gemini_api_key') || '';
 
+    // 페이지 로드 시 저장된 API 키 표시
+    if (apiKey) {
+        document.getElementById('api-key-input').value = apiKey;
+        const statusDiv = document.getElementById('api-status');
+        statusDiv.className = 'api-status success';
+        statusDiv.textContent = '✅ 저장된 API 키가 있습니다.';
+    }
+
     // API 키 저장 버튼
-    document.getElementById('save-api-key-btn').addEventListener('click', function() {
+    document.getElementById('save-api-key-btn').addEventListener('click', async function() {
         const keyInput = document.getElementById('api-key-input');
         const key = keyInput.value.trim();
         const statusDiv = document.getElementById('api-status');
@@ -904,60 +782,91 @@
             return;
         }
 
+        if (key.length < 30) {
+            statusDiv.className = 'api-status error';
+            statusDiv.textContent = '❌ API 키가 너무 짧습니다. 전체 키를 복사했는지 확인해주세요.';
+            return;
+        }
+
         apiKey = key;
         localStorage.setItem('gemini_api_key', key);
         statusDiv.className = 'api-status success';
-        statusDiv.textContent = '✅ API 키가 저장되었습니다!';
+        statusDiv.textContent = '✅ API 키가 저장되었습니다! 이제 가사를 생성할 수 있습니다.';
         
         setTimeout(() => {
             statusDiv.style.display = 'none';
-        }, 3000);
+        }, 5000);
     });
 
-    // 페이지 로드 시 저장된 API 키 표시
-    if (apiKey) {
-        document.getElementById('api-key-input').value = apiKey;
-        const statusDiv = document.getElementById('api-status');
-        statusDiv.className = 'api-status success';
-        statusDiv.textContent = '✅ 저장된 API 키가 있습니다.';
-    }
-
     /**
-     * Gemini API 호출 함수
+     * Gemini API 호출 함수 (최신 버전)
      */
     async function callGeminiAPI(promptText) {
         if (!apiKey) {
-            throw new Error('API 키가 설정되지 않았습니다. 위에서 API 키를 입력하고 저장해주세요.');
+            throw new Error('먼저 API 키를 입력해주세요! 위의 🔑 API 키 설정 섹션에서 저장해주세요.');
         }
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: promptText }]
-                    }]
-                })
+        try {
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
+                {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.9,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 8192,
+                        }
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                let errorMessage = '';
+                
+                try {
+                    const errorData = await response.json();
+                    console.error('API Error Response:', errorData);
+                    
+                    if (response.status === 404) {
+                        errorMessage = '❌ API를 찾을 수 없습니다.\n\n💡 해결 방법:\n1. API 키를 다시 확인해주세요\n2. Google AI Studio (https://aistudio.google.com/app/apikey)에서 새 API 키를 발급받아주세요';
+                    } else if (response.status === 400) {
+                        errorMessage = `❌ API 요청 오류\n\n${errorData.error?.message || '알 수 없는 오류'}`;
+                    } else if (response.status === 429) {
+                        errorMessage = '❌ API 할당량 초과\n\n잠시 후 다시 시도해주세요.';
+                    } else if (response.status === 403) {
+                        errorMessage = '❌ API 키 권한 없음\n\nAPI 키 설정을 확인해주세요.';
+                    } else {
+                        errorMessage = `❌ API 오류: ${response.status}\n\n${errorData.error?.message || response.statusText}`;
+                    }
+                } catch (parseError) {
+                    errorMessage = `❌ API 요청 실패: ${response.status} ${response.statusText}`;
+                }
+                
+                throw new Error(errorMessage);
             }
-        );
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            if (response.status === 400 && errorData.error?.message?.includes('API_KEY_INVALID')) {
-                throw new Error('API 키가 올바르지 않습니다. API 키를 확인해주세요.');
+            const data = await response.json();
+            
+            if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                throw new Error('❌ AI 응답 형식 오류\n\n다시 시도해주세요.');
             }
-            throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
-        }
 
-        const data = await response.json();
-        
-        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-            throw new Error('API 응답 형식이 올바르지 않습니다.');
+            return data.candidates[0].content.parts[0].text;
+            
+        } catch (error) {
+            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                throw new Error('❌ 네트워크 연결 오류\n\n인터넷 연결을 확인해주세요.');
+            }
+            throw error;
         }
-
-        return data.candidates[0].content.parts[0].text;
     }
 
     function initButtonGroup(containerId, itemList, selectionKey) {
@@ -987,14 +896,15 @@
     function validateSelections() {
         const errors = [];
         
-        if (!selections.genre) errors.push('장르');
-        if (!selections.mood) errors.push('분위기');
-        if (!selections.vocal) errors.push('보컬');
-        if (!selections.lang) errors.push('언어');
+        if (!selections.genre) errors.push('🎸 장르');
+        if (!selections.mood) errors.push('✨ 분위기');
+        if (!selections.vocal) errors.push('🎤 보컬');
+        if (!selections.ageGroup) errors.push('👥 타겟 연령대');
+        if (!selections.lang) errors.push('🌐 언어');
         
         const themeInput = document.getElementById('custom-theme').value.trim();
         if (!themeInput && !selections.theme) {
-            errors.push('가사 주제');
+            errors.push('📝 가사 주제');
         }
         
         return errors;
@@ -1048,6 +958,7 @@
         selections.usage = null;
         selections.instrument = null;
         selections.bpm = null;
+        selections.ageGroup = null;
         selections.lang = null;
         selections.theme = null;
 
@@ -1060,11 +971,9 @@
         document.getElementById('custom-theme').value = '';
 
         document.getElementById('result').style.display = 'none';
-        document.getElementById('youtube-result').style.display = 'none';
         
         hideError();
         generatedPrompt = '';
-        youtubePackage = {};
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -1087,6 +996,7 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 가사: [여기에 가사 전체]
 
 [조건]
+- 타겟 연령대: ${selections.ageGroup} ⭐ 매우 중요! 
 - 용도: ${usage}
 - 장르: ${selections.genre}
 - 분위기: ${selections.mood}
@@ -1096,30 +1006,68 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 - 가사 언어: ${selections.lang}
 - 주제: ${theme}
 
-[특별 지시사항]
-1. **제목**: 청취자의 관심을 끌 수 있는 매력적이고 클릭을 유도하는 제목으로 작성하세요.
+[타겟 연령대별 창작 가이드 - 필수 준수!]
 
-2. **스타일 태그**: Suno AI가 이해할 수 있는 전문 음악 용어를 영어로 작성하세요. 
+**👶 유아 (0-7세):**
+- 제목: 단순하고 귀여운 단어 사용 (예: "반짝반짝 작은 별", "꿈나라 여행")
+- 어투: 반복적이고 쉬운 단어, 의성어/의태어 활용
+- 가사: 짧은 문장, 쉬운 리듬, 교육적 내용
+- 예시: "엄마, 아빠", "뛰뛰빵빵", "반짝반짝"
+
+**🎒 10대 (청소년):**
+- 제목: 트렌디하고 감성적 (예: "우리들의 청춘", "너의 이름을 불러봐")
+- 어투: 친구같은 말투, 공감 가는 학교생활/고민
+- 가사: 꿈, 도전, 우정, 첫사랑, 성장통
+- 예시: "진짜 내 모습", "함께라면 괜찮아"
+
+**💼 20대 (청춘):**
+- 제목: 세련되고 힙한 (예: "Midnight Seoul", "독립선언")
+- 어투: 현대적이고 트렌디한 표현, 은유 사용
+- 가사: 사랑, 이별, 자아 찾기, 현실과 꿈
+- 예시: "우리만의 리듬", "이 순간을 기억해"
+
+**👔 30-40대 (직장인/부모):**
+- 제목: 공감되고 위로되는 (예: "오늘도 수고했어", "우리 아이에게")
+- 어투: 성숙하고 진솔한, 삶의 무게 담긴
+- 가사: 가족, 책임, 일상의 행복, 버티기
+- 예시: "당신 덕분에", "평범한 기적"
+
+**🎩 50-60대 (시니어):**
+- 제목: 깊이있고 품격있는 (예: "인생의 오후", "추억이 흐르는 강")
+- 어투: 정제된 표현, 인생 철학 담긴
+- 가사: 추억, 감사, 인생, 세월, 가족
+- 예시: "세월이 가르쳐준", "그대와 함께한 시간"
+
+**🌍 전 연령대 (All Ages):**
+- 제목: 보편적 감성 (예: "함께라서 행복해", "꿈을 향해")
+- 어투: 누구나 이해할 수 있는 표현
+- 가사: 사랑, 희망, 행복, 용기 등 보편적 주제
+- 예시: "우리 함께", "빛나는 내일"
+
+[특별 지시사항]
+1. **제목**: 타겟 연령대가 클릭하고 싶은 제목으로 작성
+
+2. **스타일 태그**: Suno AI가 이해할 수 있는 전문 음악 용어를 영어로 작성
    예시: "City Pop, Synth Wave, Dreamy, Female Vocal, 80s"
 
-3. **가사 구조**: 4분 분량의 풀버전을 위해 다음 구조를 참고하세요:
-   - [Intro] (인트로)
-   - [Verse 1] (1절)
-   - [Pre-Chorus] (프리코러스)
-   - [Chorus] (후렴)
-   - [Instrumental Solo] (간주)
-   - [Verse 2] (2절)
-   - [Pre-Chorus] (프리코러스)
-   - [Chorus] (후렴)
-   - [Bridge] (브릿지)
-   - [Final Chorus] (마지막 후렴)
-   - [Outro] (아웃트로)
+3. **가사 구조**: 4분 분량의 풀버전
+   - [Intro] 
+   - [Verse 1] 
+   - [Pre-Chorus] 
+   - [Chorus] 
+   - [Instrumental Solo] 
+   - [Verse 2] 
+   - [Pre-Chorus] 
+   - [Chorus] 
+   - [Bridge] 
+   - [Final Chorus] 
+   - [Outro]
 
-4. **가사 작성 시 주의사항**:
-   - 간주(Instrumental Solo) 구간을 전략적으로 배치
-   - 각 섹션은 충분한 분량으로 작성
-   - 반복되는 후렴구는 일관성 유지
-   - 감정의 흐름이 자연스럽게 이어지도록 작성
+4. **가사 작성 핵심**:
+   - ⭐ 타겟 연령대(${selections.ageGroup})에 맞는 어휘와 어투 사용
+   - 해당 연령대가 공감할 수 있는 상황과 감정 표현
+   - 연령대별 관심사와 가치관 반영
+   - 자연스러운 문장 흐름과 리듬감
 
 반드시 위 형식(제목: / 스타일: / 가사:)을 정확히 지켜주세요.`;
 
@@ -1136,6 +1084,7 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 유튜브 음악 채널용 글로벌 업로드 패키지를 생성해주세요.
 
 [선택된 변수]
+- ⭐ 타겟 연령대: ${selections.ageGroup} (가장 중요!)
 - 장르: ${selections.genre}
 - 분위기: ${selections.mood}
 - 보컬: ${selections.vocal}
@@ -1144,6 +1093,38 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 - 속도(BPM): ${bpm}
 - 가사 언어: ${selections.lang}
 - 주제: ${theme}
+
+[타겟 연령대별 제목/설명 전략]
+
+**👶 유아 (0-7세):**
+- 제목 스타일: "🎵 꿈나라 자장가 모음", "🌟 아기를 위한 포근한 음악"
+- 설명 어투: 부드럽고 따뜻한, 부모님께 안심을 드리는
+- 해시태그: #자장가 #아기음악 #수면유도 #육아 #동요
+
+**🎒 10대 (청소년):**
+- 제목 스타일: "청춘의 순간들 | 10대를 위한 플레이리스트"
+- 설명 어투: 친구같은 공감형, 열정적
+- 해시태그: #청춘 #학생 #공부음악 #청소년 #10대감성
+
+**💼 20대 (청춘):**
+- 제목 스타일: "20대의 밤 | Midnight Seoul Vibes"
+- 설명 어투: 트렌디하고 힙한, 감성적
+- 해시태그: #20대 #감성 #청춘 #독립 #힙스터
+
+**👔 30-40대 (직장인/부모):**
+- 제목 스타일: "오늘도 수고했어 | 직장인 위로 플레이리스트"
+- 설명 어투: 위로와 공감, 성숙한
+- 해시태그: #직장인 #워라밸 #힐링 #위로 #가족
+
+**🎩 50-60대 (시니어):**
+- 제목 스타일: "인생의 오후 | 추억이 흐르는 음악"
+- 설명 어투: 품격있고 깊이있는, 존중하는
+- 해시태그: #추억 #시니어 #중장년 #인생 #감성
+
+**🌍 전 연령대 (All Ages):**
+- 제목 스타일: "함께 듣는 행복한 음악 | 가족 플레이리스트"
+- 설명 어투: 보편적이고 따뜻한
+- 해시태그: #가족 #전연령 #힐링 #행복 #감동
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 전체 구성 요소
@@ -1154,33 +1135,32 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 위 변수를 기반으로 **10개의 서로 다른 곡**을 만들어주세요.
 각 곡마다 다음을 포함해주세요:
 
-**곡 1:**
-제목: [VideoBERT 알고리즘 적용 - 시각적 묘사가 뛰어난 제목]
+**🎵 곡 1:**
+제목: [타겟 연령대(${selections.ageGroup})에 맞는 제목]
 스타일 태그: [Suno AI용 영문 전문 음악 용어]
-가사: [4분 분량 풀버전 - Intro/Verse/Chorus/Bridge/Outro 구조]
+가사: [타겟 연령대가 공감할 수 있는 4분 분량 풀버전]
 
-**곡 2:**
+**🎵 곡 2:**
 (동일한 형식으로 10곡까지)
 
 **중요:**
-- 10곡은 모두 같은 장르(${selections.genre})와 분위기(${selections.mood})를 유지하되
-- 각 곡의 세부 주제, 가사 내용, 템포는 다양하게 변화
-- 제목은 각각 독창적이고 클릭을 유도하는 내용으로
-- 스타일 태그는 Suno AI가 이해할 수 있는 영문 음악 용어로
+- 10곡 모두 타겟 연령대(${selections.ageGroup})의 관심사와 어투 반영
+- 각 곡은 같은 장르와 분위기 유지하되 세부 주제는 다양하게
+- 제목과 가사는 연령대에 맞는 어휘 수준 사용
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## PART 2: 6개 국어 유튜브 업로드 세트
 
-각 언어별로 다음을 생성해주세요:
+⭐ 각 언어의 제목과 설명은 타겟 연령대(${selections.ageGroup})에 맞게 작성!
 
 ### 🇰🇷 한국어 (Korean)
 
 **📌 영상 제목:**
-[플레이리스트 전체를 대표하는 매력적인 제목 - 40자 이내, SEO 최적화]
+[타겟 연령대가 클릭하고 싶은 제목 - SEO 최적화, 40자 이내]
 
 **📝 영상 설명란:**
-[플레이리스트 소개 2-3문장]
+[타겟 연령대에 맞는 어투로 플레이리스트 소개 2-3문장]
 
 ⏱️ 타임스탬프:
 00:00 [곡1 제목] - [한 줄 설명]
@@ -1194,179 +1174,25 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 34:00 [곡9 제목] - [한 줄 설명]
 38:15 [곡10 제목] - [한 줄 설명]
 
-🎵 이 재생목록이 마음에 드셨다면 구독과 좋아요 부탁드립니다!
+🎵 [타겟 연령대에 맞는 구독 유도 문구]
 새로운 음악이 매주 업데이트됩니다.
 
 © All rights reserved. Unauthorized copying prohibited.
 🎧 Music for [${usage}]
 
 **#️⃣ 해시태그:**
-[15-20개의 관련 해시태그 - 장르, 분위기, 용도 관련]
+[타겟 연령대가 실제로 검색하는 15-20개 해시태그]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-### 🇺🇸 English
+(이어서 🇺🇸 English, 🇯🇵 日本語, 🇪🇸 Español, 🇧🇷 Português, 🇮🇳 हिन्दी 동일한 형식으로 작성)
 
-**📌 Video Title:**
-[Attractive playlist title - SEO optimized, under 60 characters]
-
-**📝 Video Description:**
-[Playlist introduction in 2-3 sentences]
-
-⏱️ Timestamps:
-00:00 [Song 1 Title] - [One line description]
-04:15 [Song 2 Title] - [One line description]
-08:30 [Song 3 Title] - [One line description]
-12:45 [Song 4 Title] - [One line description]
-17:00 [Song 5 Title] - [One line description]
-21:15 [Song 6 Title] - [One line description]
-25:30 [Song 7 Title] - [One line description]
-29:45 [Song 8 Title] - [One line description]
-34:00 [Song 9 Title] - [One line description]
-38:15 [Song 10 Title] - [One line description]
-
-🎵 If you enjoyed this playlist, please subscribe and like!
-New music updated weekly.
-
-© All rights reserved. Unauthorized copying prohibited.
-🎧 Music for [${usage}]
-
-**#️⃣ Hashtags:**
-[15-20 relevant hashtags - genre, mood, purpose related]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-### 🇯🇵 日本語 (Japanese)
-
-**📌 動画タイトル:**
-[魅力的なプレイリストタイトル - SEO最適化、40文字以内]
-
-**📝 動画説明:**
-[プレイリスト紹介 2-3文]
-
-⏱️ タイムスタンプ:
-00:00 [曲1のタイトル] - [一行説明]
-04:15 [曲2のタイトル] - [一行説明]
-08:30 [曲3のタイトル] - [一行説明]
-12:45 [曲4のタイトル] - [一行説明]
-17:00 [曲5のタイトル] - [一行説明]
-21:15 [曲6のタイトル] - [一行説明]
-25:30 [曲7のタイトル] - [一行説明]
-29:45 [曲8のタイトル] - [一行説明]
-34:00 [曲9のタイトル] - [一行説明]
-38:15 [曲10のタイトル] - [一行説明]
-
-🎵 このプレイリストが気に入ったら、チャンネル登録といいね👍をお願いします！
-毎週新しい音楽を更新しています。
-
-© All rights reserved. Unauthorized copying prohibited.
-🎧 Music for [${usage}]
-
-**#️⃣ ハッシュタグ:**
-[15-20個の関連ハッシュタグ]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-### 🇪🇸 Español (Spanish)
-
-**📌 Título del Video:**
-[Título atractivo de la lista de reproducción - SEO optimizado, menos de 60 caracteres]
-
-**📝 Descripción del Video:**
-[Introducción de la lista de reproducción en 2-3 oraciones]
-
-⏱️ Marcas de Tiempo:
-00:00 [Título de Canción 1] - [Descripción de una línea]
-04:15 [Título de Canción 2] - [Descripción de una línea]
-08:30 [Título de Canción 3] - [Descripción de una línea]
-12:45 [Título de Canción 4] - [Descripción de una línea]
-17:00 [Título de Canción 5] - [Descripción de una línea]
-21:15 [Título de Canción 6] - [Descripción de una línea]
-25:30 [Título de Canción 7] - [Descripción de una línea]
-29:45 [Título de Canción 8] - [Descripción de una línea]
-34:00 [Título de Canción 9] - [Descripción de una línea]
-38:15 [Título de Canción 10] - [Descripción de una línea]
-
-🎵 Si disfrutaste esta lista de reproducción, ¡suscríbete y dale me gusta!
-Nueva música actualizada semanalmente.
-
-© Todos los derechos reservados. Prohibida la copia no autorizada.
-🎧 Música para [${usage}]
-
-**#️⃣ Hashtags:**
-[15-20 hashtags relevantes]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-### 🇧🇷 Português (Portuguese)
-
-**📌 Título do Vídeo:**
-[Título atraente da playlist - SEO otimizado, menos de 60 caracteres]
-
-**📝 Descrição do Vídeo:**
-[Introdução da playlist em 2-3 frases]
-
-⏱️ Marcadores de Tempo:
-00:00 [Título da Música 1] - [Descrição de uma linha]
-04:15 [Título da Música 2] - [Descrição de uma linha]
-08:30 [Título da Música 3] - [Descrição de uma linha]
-12:45 [Título da Música 4] - [Descrição de uma linha]
-17:00 [Título da Música 5] - [Descrição de uma linha]
-21:15 [Título da Música 6] - [Descrição de uma linha]
-25:30 [Título da Música 7] - [Descrição de uma linha]
-29:45 [Título da Música 8] - [Descrição de uma linha]
-34:00 [Título da Música 9] - [Descrição de uma linha]
-38:15 [Título da Música 10] - [Descrição de uma linha]
-
-🎵 Se você gostou desta playlist, inscreva-se e curta!
-Novas músicas atualizadas semanalmente.
-
-© Todos os direitos reservados. Cópia não autorizada proibida.
-🎧 Música para [${usage}]
-
-**#️⃣ Hashtags:**
-[15-20 hashtags relevantes]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-### 🇮🇳 हिन्दी (Hindi)
-
-**📌 वीडियो शीर्षक:**
-[आकर्षक प्लेलिस्ट शीर्षक - SEO अनुकूलित]
-
-**📝 वीडियो विवरण:**
-[2-3 वाक्यों में प्लेलिस्ट परिचय]
-
-⏱️ टाइमस्टैम्प:
-00:00 [गीत 1 शीर्षक] - [एक पंक्ति विवरण]
-04:15 [गीत 2 शीर्षक] - [एक पंक्ति विवरण]
-08:30 [गीत 3 शीर्षक] - [एक पंक्ति विवरण]
-12:45 [गीत 4 शीर्षक] - [एक पंक्ति विवरण]
-17:00 [गीत 5 शीर्षक] - [एक पंक्ति विवरण]
-21:15 [गीत 6 शीर्षक] - [एक पंक्ति विवरण]
-25:30 [गीत 7 शीर्षक] - [एक पंक्ति विवरण]
-29:45 [गीत 8 शीर्षक] - [एक पंक्ति विवरण]
-34:00 [गीत 9 शीर्षक] - [एक पंक्ति विवरण]
-38:15 [गीत 10 शीर्षक] - [एक पंक्ति विवरण]
-
-🎵 अगर आपको यह प्लेलिस्ट पसंद आई, तो कृपया सब्सक्राइब और लाइक करें!
-हर सप्ताह नया संगीत अपडेट किया जाता है।
-
-© सर्वाधिकार सुरक्षित। अनधिकृत प्रतिलिपि निषिद्ध।
-🎧 Music for [${usage}]
-
-**#️⃣ हैशटैग:**
-[15-20 संबंधित हैशटैग]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[중요 지시사항]
-1. 10곡의 개별 프롬프트는 각각 독립적이고 완성도 있게 작성
-2. 각 언어의 제목은 단순 번역이 아닌, 해당 문화권에 맞는 자연스러운 표현 사용
-3. 타임스탬프의 곡 제목은 각 언어로 번역하되, 원곡의 느낌 유지
-4. 해시태그는 각 언어권에서 실제로 검색되는 키워드 포함
-5. VideoBERT 알고리즘을 적용하여 시각적으로 상상 가능한 제목 작성
-6. SEO를 고려하여 검색 최적화된 키워드 배치
+[최종 지시사항]
+1. ⭐ 타겟 연령대(${selections.ageGroup})를 최우선으로 고려
+2. 각 언어의 제목/설명은 해당 문화권 + 연령대 특성 모두 반영
+3. 유튜브 제목은 해당 연령대가 검색할 만한 키워드 포함
+4. 해시태그는 연령대별로 실제 사용하는 태그 선정
+5. 10곡 프롬프트는 연령대가 공감할 수 있는 내용으로
 
 위 형식을 정확히 지켜서 전체 패키지를 완성해주세요.`;
 
@@ -1374,39 +1200,43 @@ Novas músicas atualizadas semanalmente.
     }
 
     async function handleGenerate() {
+        // API 키 확인
+        if (!apiKey) {
+            showError('❌ 먼저 API 키를 입력해주세요!\n\n위의 🔑 API 키 설정 섹션에서 Google AI Studio API 키를 입력하고 저장해주세요.');
+            document.getElementById('api-key-input').focus();
+            return;
+        }
+
         const errors = validateSelections();
         
         if (errors.length > 0) {
-            showError(`❌ 다음 항목을 선택해주세요: ${errors.join(', ')}`);
+            showError(`❌ 다음 항목을 선택해주세요:\n\n${errors.join('\n')}`);
             return;
         }
 
         hideError();
         
-        // 버튼 비활성화 및 로딩 상태
         const generateBtn = document.getElementById('generate-btn');
         const originalText = generateBtn.textContent;
         generateBtn.disabled = true;
         generateBtn.textContent = '🎵 AI가 가사를 생성하는 중...';
 
-        // 결과 영역 표시
         const resultDiv = document.getElementById('result');
         const outputContent = document.getElementById('output-content');
-        outputContent.textContent = '✨ AI가 당신만의 노래를 만들고 있습니다...\n잠시만 기다려주세요. ⏳';
+        document.getElementById('result-title').textContent = '🎼 AI가 가사를 생성하고 있습니다...';
+        document.getElementById('result-subtitle').textContent = '잠시만 기다려주세요 ⏳';
+        outputContent.innerHTML = '<div class="loading">완벽한 가사를 만들고 있습니다</div>';
         resultDiv.style.display = 'block';
 
         try {
-            // 프롬프트 생성
             const promptText = generatePromptText();
-            
-            // AI API 호출
             const result = await callGeminiAPI(promptText);
             
-            // 결과 저장 및 표시
             generatedPrompt = result;
+            document.getElementById('result-title').textContent = '🎼 AI 생성 완료!';
+            document.getElementById('result-subtitle').textContent = 'Suno AI에 바로 사용하세요!';
             outputContent.textContent = result;
 
-            // 결과 영역으로 스크롤
             setTimeout(() => {
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -1414,63 +1244,55 @@ Novas músicas atualizadas semanalmente.
         } catch (error) {
             console.error('생성 오류:', error);
             
-            let errorMessage = '❌ 가사 생성 중 오류가 발생했습니다.\n\n';
-            
-            if (error.message.includes('API 키')) {
-                errorMessage += '💡 해결 방법:\n1. 위의 API 키 입력란에 올바른 API 키를 입력하세요\n2. Google AI Studio (https://aistudio.google.com/app/apikey)에서 API 키를 발급받을 수 있습니다';
-            } else if (error.message.includes('API 요청 실패')) {
-                errorMessage += '네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.\n\n상세 오류: ' + error.message;
-            } else {
-                errorMessage += '상세 오류: ' + error.message;
-            }
-            
-            outputContent.textContent = errorMessage;
-            showError(errorMessage);
+            document.getElementById('result-title').textContent = '❌ 오류 발생';
+            document.getElementById('result-subtitle').textContent = '아래 내용을 확인해주세요';
+            outputContent.textContent = error.message;
+            showError(error.message);
 
         } finally {
-            // 버튼 원상복구
             generateBtn.disabled = false;
             generateBtn.textContent = originalText;
         }
     }
 
     async function handleYoutubeGenerate() {
+        // API 키 확인
+        if (!apiKey) {
+            showError('❌ 먼저 API 키를 입력해주세요!\n\n위의 🔑 API 키 설정 섹션에서 Google AI Studio API 키를 입력하고 저장해주세요.');
+            document.getElementById('api-key-input').focus();
+            return;
+        }
+
         const errors = validateSelections();
         
         if (errors.length > 0) {
-            showError(`❌ 다음 항목을 선택해주세요: ${errors.join(', ')}`);
+            showError(`❌ 다음 항목을 선택해주세요:\n\n${errors.join('\n')}`);
             return;
         }
 
         hideError();
         
-        // 버튼 비활성화 및 로딩 상태
         const youtubeBtn = document.getElementById('youtube-btn');
         const originalText = youtubeBtn.textContent;
         youtubeBtn.disabled = true;
-        youtubeBtn.textContent = '🌍 6개국어 패키지 생성 중...';
+        youtubeBtn.textContent = '🌍 10곡 + 6개국어 생성 중...';
 
-        // 결과 영역 표시
         const resultDiv = document.getElementById('result');
         const outputContent = document.getElementById('output-content');
-        outputContent.textContent = '✨ AI가 6개 언어로 유튜브 업로드 패키지를 만들고 있습니다...\n10곡 플레이리스트 + 타임스탬프 + 설명란 + 해시태그\n잠시만 기다려주세요. ⏳';
+        document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 생성 중...';
+        document.getElementById('result-subtitle').textContent = '10곡 플레이리스트 + 6개 국어 번역 중 ⏳';
+        outputContent.innerHTML = '<div class="loading">완벽한 유튜브 패키지를 만들고 있습니다<br/>10곡의 프롬프트와 6개 국어 업로드 세트를 생성하는 중입니다</div>';
         resultDiv.style.display = 'block';
 
         try {
-            // 유튜브 프롬프트 생성
             const youtubePrompt = generateYoutubePrompt();
-            
-            // AI API 호출
             const result = await callGeminiAPI(youtubePrompt);
             
-            // 결과 저장 및 표시
             generatedPrompt = result;
+            document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 완성!';
+            document.getElementById('result-subtitle').textContent = '10곡 + 6개국어 업로드 세트';
             outputContent.textContent = result;
 
-            // 유튜브 결과 미리보기 영역도 표시
-            displayYoutubePackage();
-            
-            // 결과 영역으로 스크롤
             setTimeout(() => {
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -1478,227 +1300,16 @@ Novas músicas atualizadas semanalmente.
         } catch (error) {
             console.error('생성 오류:', error);
             
-            let errorMessage = '❌ 유튜브 패키지 생성 중 오류가 발생했습니다.\n\n';
-            
-            if (error.message.includes('API 키')) {
-                errorMessage += '💡 해결 방법:\n1. 위의 API 키 입력란에 올바른 API 키를 입력하세요\n2. Google AI Studio (https://aistudio.google.com/app/apikey)에서 API 키를 발급받을 수 있습니다';
-            } else if (error.message.includes('API 요청 실패')) {
-                errorMessage += '네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.\n\n상세 오류: ' + error.message;
-            } else {
-                errorMessage += '상세 오류: ' + error.message;
-            }
-            
-            outputContent.textContent = errorMessage;
-            showError(errorMessage);
+            document.getElementById('result-title').textContent = '❌ 오류 발생';
+            document.getElementById('result-subtitle').textContent = '아래 내용을 확인해주세요';
+            outputContent.textContent = error.message;
+            showError(error.message);
 
         } finally {
-            // 버튼 원상복구
             youtubeBtn.disabled = false;
             youtubeBtn.textContent = originalText;
         }
     }
-
-    function displayYoutubePackage() {
-        const youtubeResult = document.getElementById('youtube-result');
-        const tabsContainer = document.getElementById('lang-tabs');
-        const contentContainer = document.getElementById('lang-content-container');
-
-        tabsContainer.innerHTML = '';
-        contentContainer.innerHTML = '';
-
-        const timestampExample = `00:00 Song 1 - Description
-04:15 Song 2 - Description
-08:30 Song 3 - Description
-12:45 Song 4 - Description
-17:00 Song 5 - Description
-21:15 Song 6 - Description
-25:30 Song 7 - Description
-29:45 Song 8 - Description
-34:00 Song 9 - Description
-38:15 Song 10 - Description`;
-
-        languages.forEach((lang, index) => {
-            const tabBtn = document.createElement('button');
-            tabBtn.className = 'tab-btn' + (index === 0 ? ' active-tab' : '');
-            tabBtn.innerHTML = `${lang.flag} ${lang.name}`;
-            tabBtn.onclick = () => switchTab(lang.code);
-            tabsContainer.appendChild(tabBtn);
-
-            const tabContent = document.createElement('div');
-            tabContent.className = 'tab-content' + (index === 0 ? ' active-content' : '');
-            tabContent.id = `tab-${lang.code}`;
-            
-            tabContent.innerHTML = `
-                <div class="lang-section">
-                    <div class="lang-title">
-                        <span class="lang-flag">${lang.flag}</span>
-                        <span>${lang.name} 업로드 세트</span>
-                    </div>
-
-                    <div class="content-block">
-                        <div class="content-label">📌 영상 제목 (Video Title)</div>
-                        <div class="content-text" id="title-${lang.code}">
-✨ Google AI Studio에서 생성된 제목이 여기 표시됩니다
-
-[예시]
-${lang.code === 'ko' ? '🌙 밤하늘 아래 감성 음악 모음 | 로파이 힙합 플레이리스트' : 
-  lang.code === 'en' ? '🌙 Emotional Music Under the Night Sky | Lo-fi Hip Hop Playlist' :
-  lang.code === 'ja' ? '🌙 夜空の下で聴く感性音楽集 | ローファイヒップホッププレイリスト' :
-  lang.code === 'es' ? '🌙 Música Emocional Bajo el Cielo Nocturno | Lista de Reproducción Lo-fi Hip Hop' :
-  lang.code === 'pt' ? '🌙 Música Emocional Sob o Céu Noturno | Playlist Lo-fi Hip Hop' :
-  '🌙 रात के आसमान के नीचे भावनात्मक संगीत | लो-फाई हिप हॉप प्लेलिस्ट'}
-                        </div>
-                        <button class="copy-lang-btn" onclick="copyLangContent('title-${lang.code}', this)">📌 제목 복사</button>
-                    </div>
-
-                    <div class="timestamp-section">
-                        <div class="timestamp-title">⏱️ 타임스탬프 (10곡 플레이리스트)</div>
-                        <div class="content-text" id="timestamp-${lang.code}">${timestampExample}</div>
-                        <button class="copy-lang-btn" onclick="copyLangContent('timestamp-${lang.code}', this)">⏱️ 타임스탬프 복사</button>
-                    </div>
-
-                    <div class="content-block">
-                        <div class="content-label">📝 유튜브 설명란 (Description)</div>
-                        <div class="content-text" id="description-${lang.code}">
-Google AI Studio에서 생성된 완전한 설명란이 여기 표시됩니다.
-
-[포함 내용]
-- 플레이리스트 소개 (2-3문장)
-- 10곡 타임스탬프 전체
-- 구독 유도 문구
-- 저작권 표기
-
-[예시 구조]
-${lang.code === 'ko' ? 
-`밤하늘 아래에서 듣기 좋은 감성적인 로파이 힙합 음악을 모았습니다.
-공부, 작업, 휴식 시간에 완벽한 배경 음악입니다.
-
-⏱️ 타임스탬프:
-00:00 곡1 - 설명
-04:15 곡2 - 설명
-...
-
-🎵 이 재생목록이 마음에 드셨다면 구독과 좋아요 부탁드립니다!
-새로운 음악이 매주 업데이트됩니다.
-
-© All rights reserved. Unauthorized copying prohibited.` :
-lang.code === 'en' ?
-`A collection of emotional lo-fi hip hop music perfect for listening under the night sky.
-Perfect background music for studying, working, or relaxing.
-
-⏱️ Timestamps:
-00:00 Song 1 - Description
-04:15 Song 2 - Description
-...
-
-🎵 If you enjoyed this playlist, please subscribe and like!
-New music updated weekly.
-
-© All rights reserved. Unauthorized copying prohibited.` :
-'AI가 생성한 해당 언어의 설명이 표시됩니다'}
-                        </div>
-                        <button class="copy-lang-btn" onclick="copyLangContent('description-${lang.code}', this)">📝 설명란 복사</button>
-                    </div>
-
-                    <div class="content-block">
-                        <div class="content-label">#️⃣ 해시태그 (Hashtags)</div>
-                        <div class="content-text" id="hashtags-${lang.code}">
-${lang.code === 'ko' ? 
-'#로파이 #힙합 #감성음악 #공부음악 #작업음악 #집중음악 #밤음악 #편안한음악 #배경음악 #플레이리스트 #chillmusic #studymusic #relaxing #lofi #hiphop' :
-lang.code === 'en' ?
-'#lofi #hiphop #chillmusic #studymusic #workmusic #relaxingmusic #playlist #backgroundmusic #nightmusic #aesthetic #beats #chill #relax #focus #concentration' :
-'#해시태그1 #해시태그2 #해시태그3 ...'}
-                        </div>
-                        <button class="copy-lang-btn" onclick="copyLangContent('hashtags-${lang.code}', this)">#️⃣ 해시태그 복사</button>
-                    </div>
-
-                    <button class="copy-lang-btn" onclick="copyAllLangContent('${lang.code}', this)" 
-                            style="background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%); font-size: 1.1em; padding: 14px 28px; margin-top: 10px;">
-                        📦 ${lang.name} 전체 업로드 세트 복사
-                    </button>
-                </div>
-            `;
-            
-            contentContainer.appendChild(tabContent);
-        });
-
-        youtubeResult.style.display = 'block';
-        setTimeout(() => {
-            youtubeResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-    }
-
-    function switchTab(langCode) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active-tab');
-        });
-
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active-content');
-        });
-
-        const selectedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => 
-            btn.textContent.includes(languages.find(l => l.code === langCode).name)
-        );
-        if (selectedBtn) selectedBtn.classList.add('active-tab');
-
-        const selectedContent = document.getElementById(`tab-${langCode}`);
-        if (selectedContent) selectedContent.classList.add('active-content');
-    }
-
-    window.copyLangContent = async function(elementId, button) {
-        const element = document.getElementById(elementId);
-        if (!element) return;
-
-        const text = element.textContent;
-        
-        try {
-            await navigator.clipboard.writeText(text);
-            const originalText = button.textContent;
-            button.classList.add('copied');
-            button.textContent = '✓ 복사 완료!';
-            
-            setTimeout(() => {
-                button.classList.remove('copied');
-                button.textContent = originalText;
-            }, 2000);
-        } catch (err) {
-            alert('복사 실패! 수동으로 복사해주세요.');
-        }
-    };
-
-    window.copyAllLangContent = async function(langCode, button) {
-        const title = document.getElementById(`title-${langCode}`).textContent;
-        const timestamp = document.getElementById(`timestamp-${langCode}`).textContent;
-        const description = document.getElementById(`description-${langCode}`).textContent;
-        const hashtags = document.getElementById(`hashtags-${langCode}`).textContent;
-
-        const fullPackage = `📌 제목:
-${title}
-
-⏱️ 타임스탬프:
-${timestamp}
-
-📝 설명란:
-${description}
-
-#️⃣ 해시태그:
-${hashtags}`;
-
-        try {
-            await navigator.clipboard.writeText(fullPackage);
-            const originalText = button.textContent;
-            button.classList.add('copied');
-            button.textContent = '✓ 전체 복사 완료!';
-            
-            setTimeout(() => {
-                button.classList.remove('copied');
-                button.textContent = originalText;
-            }, 2000);
-        } catch (err) {
-            alert('복사 실패! 수동으로 복사해주세요.');
-        }
-    };
 
     // 초기화
     initButtonGroup('genre-btns', data.genres, 'genre');
@@ -1707,6 +1318,7 @@ ${hashtags}`;
     initButtonGroup('usage-btns', data.usages, 'usage');
     initButtonGroup('instrument-btns', data.instruments, 'instrument');
     initButtonGroup('bpm-btns', data.bpms, 'bpm');
+    initButtonGroup('age-group-btns', data.ageGroups, 'ageGroup');
     initButtonGroup('lang-btns', data.langs, 'lang');
     initButtonGroup('theme-btns', data.themes, 'theme');
 
