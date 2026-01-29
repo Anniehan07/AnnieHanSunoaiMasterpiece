@@ -807,15 +807,23 @@
         }
 
         try {
-            // Google Gemini API v1beta - 공식 엔드포인트
+            // ✅ Google Gemini API v1beta - 공식 엔드포인트 (확정)
+            // ✅ 모델: gemini-1.5-flash (안정 버전)
+            // ✅ 키 전달: URL 파라미터 방식 (?key=...)
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             
-            console.log('🔍 API 호출 시작');
-            console.log('📍 엔드포인트:', apiUrl.replace(apiKey, 'API_KEY_HIDDEN'));
-            console.log('🔑 API 키 길이:', apiKey.length);
-            console.log('🔑 API 키 시작:', apiKey.substring(0, 10) + '...');
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log('🚀 API 호출 시작');
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log('📍 전체 URL:', apiUrl.replace(apiKey, 'API_KEY_HIDDEN'));
+            console.log('🏷️  모델명: gemini-1.5-flash');
+            console.log('🔐 키 전달: URL 파라미터 (?key=...)');
+            console.log('🔑 API 키 길이:', apiKey.length, '자');
+            console.log('🔑 API 키 시작:', apiKey.substring(0, 15) + '...');
+            console.log('🔑 API 키 끝:', '...' + apiKey.substring(apiKey.length - 10));
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             
-            // 요청 본문 구조 - Google 공식 형식
+            // 요청 본문 구조 - Google 공식 형식 (정확히 준수)
             const requestBody = {
                 contents: [{
                     parts: [{
@@ -830,7 +838,9 @@
                 }
             };
             
-            console.log('📤 Request Body:', JSON.stringify(requestBody, null, 2).substring(0, 300) + '...');
+            console.log('📤 Request Body (처음 500자):');
+            console.log(JSON.stringify(requestBody, null, 2).substring(0, 500) + '...');
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             
             const response = await fetch(
                 apiUrl,
@@ -843,30 +853,103 @@
                 }
             );
 
-            console.log('📥 Response Status:', response.status);
-            console.log('📥 Response OK:', response.ok);
-            console.log('📥 Response Headers:', Object.fromEntries([...response.headers.entries()]));
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log('📥 응답 받음');
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log('✅ Status Code:', response.status);
+            console.log('✅ Status Text:', response.statusText);
+            console.log('✅ Response OK:', response.ok);
+            console.log('📋 Response Headers:', Object.fromEntries([...response.headers.entries()]));
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
             if (!response.ok) {
                 let errorMessage = '';
+                let fullErrorResponse = '';
                 
                 try {
-                    const errorData = await response.json();
-                    console.error('API Error Response:', errorData);
+                    const errorText = await response.text();
+                    console.error('❌ Raw Error Response:', errorText);
+                    fullErrorResponse = errorText;
                     
-                    if (response.status === 404) {
-                        errorMessage = `❌ API를 찾을 수 없습니다 (404 Error)\n\n🔍 현재 엔드포인트:\nhttps://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent\n\n💡 해결 방법:\n\n1️⃣ API 키 재발급\n   https://aistudio.google.com/app/apikey\n   - "Create API key" → "Create API key in new project"\n\n2️⃣ API 활성화\n   https://console.cloud.google.com\n   - "Generative Language API" 검색 후 "사용 설정"\n\n3️⃣ 결제 계정 연결 (필수!)\n\n📝 상세 오류: ${errorData.error?.message || '알 수 없음'}`;
-                    } else if (response.status === 400) {
-                        errorMessage = `❌ API 요청 오류\n\n${errorData.error?.message || '알 수 없는 오류'}`;
-                    } else if (response.status === 429) {
-                        errorMessage = '❌ API 할당량 초과\n\n잠시 후 다시 시도해주세요.';
-                    } else if (response.status === 403) {
-                        errorMessage = '❌ API 키 권한 없음\n\nAPI 키 설정을 확인해주세요.';
-                    } else {
-                        errorMessage = `❌ API 오류: ${response.status}\n\n${errorData.error?.message || response.statusText}`;
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                        console.error('❌ Parsed Error Data:', JSON.stringify(errorData, null, 2));
+                    } catch (parseErr) {
+                        console.error('❌ Cannot parse error as JSON');
+                        errorData = { raw: errorText };
                     }
-                } catch (parseError) {
-                    errorMessage = `❌ API 요청 실패: ${response.status} ${response.statusText}`;
+                    
+                    // 구글이 보내준 실제 에러 메시지를 모두 표시
+                    errorMessage = `❌ API 호출 실패 (${response.status} ${response.statusText})
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 구글이 보내준 실제 에러 메시지:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${fullErrorResponse}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 요청 정보:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 엔드포인트: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
+
+🔑 API 키: ${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 5)} (길이: ${apiKey.length}자)
+
+📤 요청 메서드: POST
+📦 Content-Type: application/json
+🔐 키 전달 방식: URL 파라미터 (?key=...)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 404 에러 해결 방법:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣ API 키 재발급 (가장 확실!)
+   👉 https://aistudio.google.com/app/apikey
+   - 기존 키 삭제
+   - "Create API key" 클릭
+   - "Create API key in new project" 선택
+   - 생성된 키 **전체** 복사
+
+2️⃣ Generative Language API 활성화
+   👉 https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
+   - 해당 프로젝트 선택
+   - "사용 설정" 버튼 클릭
+   - 활성화 완료될 때까지 대기 (1-2분)
+
+3️⃣ 결제 계정 연결 (필수!)
+   👉 https://console.cloud.google.com/billing
+   - 무료 할당량 사용에도 결제 계정 필요
+   - 신용카드 등록 (실제 청구 안 됨)
+
+4️⃣ API 키 제한 확인
+   👉 https://console.cloud.google.com/apis/credentials
+   - 해당 API 키 클릭
+   - "API 제한사항" 섹션
+   - "Generative Language API" 허용 확인
+
+5️⃣ 캐시 및 쿠키 삭제
+   - Ctrl + Shift + Delete
+   - 전체 삭제 후 브라우저 재시작
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ 위 에러 메시지를 복사해서 저에게 보내주시면 
+정확한 원인을 찾아드릴 수 있습니다!`;
+                    
+                } catch (readError) {
+                    console.error('❌ Error reading response:', readError);
+                    errorMessage = `❌ API 호출 실패 (${response.status})
+
+응답을 읽을 수 없습니다.
+
+응답 상태: ${response.status} ${response.statusText}
+읽기 오류: ${readError.message}
+
+요청 URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.substring(0, 10)}...
+
+네트워크 연결을 확인하거나 API 키를 새로 발급받아주세요.`;
                 }
                 
                 throw new Error(errorMessage);
@@ -874,11 +957,32 @@
 
             const data = await response.json();
             
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log('✅ API 호출 성공!');
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log('📊 응답 데이터 구조:', Object.keys(data));
+            if (data.candidates) {
+                console.log('📊 Candidates 개수:', data.candidates.length);
+            }
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            
             if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-                throw new Error('❌ AI 응답 형식 오류\n\n다시 시도해주세요.');
+                console.error('❌ 응답 구조 오류:', JSON.stringify(data, null, 2));
+                throw new Error(`❌ AI 응답 형식 오류
+
+AI가 올바른 응답을 생성하지 못했습니다.
+
+받은 응답:
+${JSON.stringify(data, null, 2).substring(0, 500)}
+
+다시 시도해주세요.`);
             }
 
-            return data.candidates[0].content.parts[0].text;
+            const generatedText = data.candidates[0].content.parts[0].text;
+            console.log('✅ 생성된 텍스트 길이:', generatedText.length, '자');
+            console.log('✅ 생성된 텍스트 처음 100자:', generatedText.substring(0, 100) + '...');
+            
+            return generatedText;
             
         } catch (error) {
             if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
