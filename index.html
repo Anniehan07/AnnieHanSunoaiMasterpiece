@@ -1,191 +1,488 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Suno AI 프롬프트 마스터 - 애니한tv</title>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --gradient-start: #667eea; --gradient-end: #764ba2; --accent: #f093fb; --dark: #1a1a2e; --youtube: #FF0000; }
-        body { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 40px 20px; }
-        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
-        .header { text-align: center; margin-bottom: 50px; color: white; }
-        h1 { font-family: 'Gowun Batang', serif; font-size: 3.5em; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 
-        /* 섹션 공통 스타일 */
-        .api-key-section, .step, .instruction-box { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 35px; border-radius: 25px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-        .step-title { font-size: 1.4em; font-weight: 700; color: var(--dark); margin-bottom: 20px; display: block; border-left: 5px solid var(--accent); padding-left: 20px; }
-        .btn-group { display: flex; flex-wrap: wrap; gap: 12px; }
-        button { padding: 12px 24px; border: 2px solid #e9ecef; border-radius: 50px; background: #f8f9fa; cursor: pointer; transition: 0.3s; font-weight: 500; }
-        button.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; border: none; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
-        
-        /* 메인 버튼 */
-        .main-btn { width: 100%; padding: 25px; background: linear-gradient(135deg, #FF0000, #cc0000); color: white; border: none; border-radius: 20px; font-size: 1.5em; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 10px 30px rgba(255,0,0,0.3); }
+import React, { useState, useCallback, useEffect } from 'react';
+import { GENRES, MOODS, VOCALS, THEMES, INSTRUMENTS, LANGUAGES, USAGES, TEMPOS, AGE_GROUPS } from './constants';
+import { SelectionCategory, PromptResult } from './types';
+import SelectionGroup from './components/SelectionGroup';
+import { generateSunoPrompts, generateQuickStyleTag } from './services/geminiService';
 
-        /* 결과 UI */
-        #result { margin-top: 50px; display: none; }
-        .package-section { background: #fff; border-radius: 25px; padding: 40px; margin-bottom: 40px; border: 2px solid var(--youtube); }
-        .copy-box { background: #f8f9fa; padding: 20px; border-radius: 15px; position: relative; margin-bottom: 15px; border: 1px solid #dee2e6; }
-        .copy-btn-sm { position: absolute; top: 15px; right: 15px; background: var(--dark); color: white; border: none; padding: 6px 15px; border-radius: 8px; font-size: 0.85em; cursor: pointer; }
-        .song-card { background: white; border-radius: 25px; padding: 35px; margin-bottom: 30px; border-top: 8px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .style-tag-box { background: #f1f3f5; padding: 12px 20px; border-radius: 12px; font-family: monospace; color: #555; margin-bottom: 25px; }
-        pre { white-space: pre-wrap; line-height: 1.9; font-size: 1.1em; }
-        input[type="text"], textarea { width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #e9ecef; margin-top: 15px; font-family: inherit; font-size: 1em; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <h1>🎵 Suno AI 프롬프트 마스터</h1>
-        <p>✨ 애니한 익스클루시브 : 108만 유튜버의 노하우 ✨</p>
-    </div>
+const languagesOptions = [
+  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'ja', name: '日本語', flag: '🇯🇵' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'pt', name: 'Português', flag: '🇧🇷' },
+  { code: 'hi', name: '히ندی', flag: '🇮🇳' }
+] as const;
 
-    <div class="api-key-section">
-        <h3>🔑 Google API 키 설정</h3>
-        <div style="display:flex; gap:12px; margin-top:20px;">
-            <input type="password" id="api-key-input" placeholder="AIzaSy... 형식의 키 입력" style="flex:1;">
-            <button id="save-api-key-btn" style="background:var(--gradient-start); color:white;">💾 저장</button>
-        </div>
-    </div>
+const RESET_STATE = {
+  genre: '',
+  mood: '',
+  vocal: '',
+  usage: '',
+  tempo: '',
+  instrument: '',
+  language: '', 
+  theme: '',
+  targetAge: '',
+};
 
-    <div id="options-area">
-        <div class="step"><span class="step-title">🎸 1. 장르 선택</span><div class="btn-group" id="genre-btns"></div></div>
-        <div class="step"><span class="step-title">✨ 2. 분위기 선택</span><div class="btn-group" id="mood-btns"></div></div>
-        <div class="step"><span class="step-title">🎤 3. 보컬 선택</span><div class="btn-group" id="vocal-btns"></div></div>
-        <div class="step"><span class="step-title">🎬 4. 사용 용도 및 상황</span><div class="btn-group" id="usage-btns"></div><input type="text" id="custom-usage" placeholder="예: 요리 브이로그, 명상용 등 직접 입력"></div>
-        <div class="step"><span class="step-title">🎹 5. 주요 악기 설정</span><div class="btn-group" id="instrument-btns"></div><input type="text" id="custom-instrument" placeholder="예: 싱잉볼, 가야금 등 직접 입력"></div>
-        <div class="step"><span class="step-title">⚡ 6. 속도 (BPM) 설정</span><div class="btn-group" id="bpm-btns"></div></div>
-        <div class="step"><span class="step-title">👥 7. 타겟 연령대 선택</span><div class="btn-group" id="ageGroup-btns"></div></div>
-        <div class="step"><span class="step-title">🌐 8. 가사 언어 설정</span><div class="btn-group" id="lang-btns"></div></div>
-        <div class="step"><span class="step-title">📝 9. 가사 주제 및 요청</span><div class="btn-group" id="theme-btns"></div><textarea id="custom-theme" placeholder="가사 주제를 상세히 적어주세요 (필수)"></textarea></div>
-    </div>
+const App: React.FC = () => {
+  const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
+  const [selections, setSelections] = useState({
+    ...RESET_STATE,
+    language: '한국어(Korean)', 
+  });
+  
+  const [customUsage, setCustomUsage] = useState('');
+  const [customTheme, setCustomTheme] = useState('');
+  const [customInstrument, setCustomInstrument] = useState('');
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [isQuickLoading, setIsQuickLoading] = useState(false);
+  
+  const [result, setResult] = useState<PromptResult | null>(null);
+  const [quickStyleTag, setQuickStyleTag] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<keyof PromptResult['youtubePackage']>('ko');
 
-    <button class="main-btn" id="generate-btn">🌍 글로벌 유튜브 패키지 생성 (10곡 + 6개국어)</button>
-
-    <div id="result">
-        <div class="package-section">
-            <h2 style="text-align:center; margin-bottom:30px;">🌍 글로벌 유튜브 업로드 패키지</h2>
-            <div id="package-display"></div>
-        </div>
-        <h2 style="color:white; margin-bottom:20px;">🎵 10 Song Variations</h2>
-        <div id="song-cards-area"></div>
-    </div>
-</div>
-
-<script>
-    const data = {
-        genres: ["🎹 시티팝", "🎧 로파이", "🌊 칠웨이브", "🎸 K-록", "👥 합창", "🧘 명상", "💫 K-pop", "💔 발라드", "🎺 재즈", "🎤 팝", "🎵 힙합", "🌌 뉴에이지", "🌫️ 앰비언트", "🎶 트로트", "🎷 블루스", "🤠 컨트리", "🪕 포크", "🏝️ 레게", "✨ 디스코", "🎸 록", "🔊 전자음악", "🎼 R&B", "🎹 소울", "🎛️ 신스팝", "☁️ 드림 팝", "🎨 인디팝", "🙏 가스펠", "🎺 스윙", "💃 라틴", "🎵 이지리스닝", "👶 자장가", "🧸 동요", "🎄 캐롤"],
-        moods: ["🌙 잔잔한", "😢 깊은 슬픔", "🌃 우울한 새벽", "🙏 경건한", "🤗 따스한 위로", "☮️ 평화로운", "☁️ 포근한", "⚡ 에너지 폭발", "💕 로맨틱", "🌅 일몰같은", "🌌 우주 같은", "🖤 다크한", "🍃 시원한", "🚗 드라이브", "💪 도전적인", "🏔️ 웅장한", "🥰 귀여운"],
-        vocals: ["👶 어린이합창", "👥 어른합창", "👩 여성(맑음)", "✨ 여성(에테리얼)", "💕 여성(로맨틱)", "🎙️ 남성(허스키)", "👦 소년", "👧 소녀", "🔥 남성(열정)", "🎵 남녀코러스", "🤖 보코더", "🤫 속삭이는", "🎤 랩(남)", "🎤 랩(여)", "🎭 오페라(남)", "🎭 오페라(여)", "🌬️ 공기반소리반", "🎼 연주곡"],
-        usages: ["📹 유튜브 브이로그", "🎮 게임 방송", "📚 공부/집중", "💪 운동/피트니스", "😴 숙면/명상", "☕ 카페 분위기", "📱 쇼츠/틱톡", "⛪ 예배/묵상"],
-        instruments: ["🎹 그랜드 피아노", "🎸 어쿠스틱 기타", "⚡ 일렉 기타", "🎵 오르골", "🎷 색소폰", "🎻 바이올린", "🎻 첼로", "🔔 싱잉볼", "🎛️ 신디사이저"],
-        bpms: ["😴 초저속(40-50)", "🌙 매우느림(50-70)", "🧘 느림(70-90)", "🚶 보통(90-110)", "😊 약간빠름(110-130)", "🏃 빠름(130-150)", "💪 매우빠름(150-170)", "⚡ 초고속(170+)"],
-        ageGroups: ["👶 유아 (0-7세)", "🎒 10대", "💼 20대", "👔 30-40대", "🎩 50-60대", "🌍 전 연령대"],
-        langs: ["🇰🇷 한국어", "🇺🇸 영어", "🌏 한+영 섞어서"],
-        themes: ["💕 첫사랑", "👶 자장가", "🌅 새벽 묵상", "💔 이별", "🤝 재회", "😊 짝사랑", "💪 자기 사랑", "🔥 용기", "✨ 갓생", "👤 주체적 나", "🎯 실패와 극복", "💎 자신감", "🏠 향수", "🌧️ 비오는 날", "✈️ 여행", "🙏 감사", "🎼 연주곡", "🎄 크리스마스"]
+  // API 키 선택 여부 확인
+  useEffect(() => {
+    const checkKey = async () => {
+      try {
+        const has = await window.aistudio.hasSelectedApiKey();
+        setHasApiKey(has);
+      } catch (e) {
+        setHasApiKey(false);
+      }
     };
+    checkKey();
+  }, []);
 
-    const selections = { genre: null, mood: null, vocal: null, usage: null, instrument: null, bpm: null, ageGroup: null, lang: null, theme: null };
-    let apiKey = localStorage.getItem('gemini_api_key') || '';
-
-    function init() {
-        if(apiKey) document.getElementById('api-key-input').value = apiKey;
-        Object.keys(selections).forEach(key => {
-            const container = document.getElementById(key + '-btns');
-            if(!container) return;
-            data[key + 's'].forEach(item => {
-                const btn = document.createElement('button');
-                btn.innerText = item;
-                btn.onclick = () => {
-                    Array.from(container.children).forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selections[key] = item;
-                };
-                container.appendChild(btn);
-            });
-        });
+  const handleOpenKeySelector = async () => {
+    try {
+      await window.aistudio.openSelectKey();
+      setHasApiKey(true);
+    } catch (e) {
+      alert("API 키 선택 중 오류가 발생했습니다.");
     }
+  };
 
-    async function copy(text, label) {
-        await navigator.clipboard.writeText(text);
-        alert(`✓ ${label} 복사 완료!`);
+  const handleSelect = (category: SelectionCategory, value: string) => {
+    setSelections(prev => ({ ...prev, [category]: value }));
+  };
+
+  const handleReset = useCallback(() => {
+    setSelections({ ...RESET_STATE }); 
+    setCustomUsage('');
+    setCustomTheme('');
+    setCustomInstrument('');
+    setResult(null);
+    setQuickStyleTag(null);
+    setError(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleGenerateQuick = async () => {
+    if (!selections.genre && !selections.mood && !customInstrument && !selections.instrument) {
+      alert('장르나 분위기 등을 선택해야 더 정확한 스타일 태그가 생성됩니다.');
     }
+    setIsQuickLoading(true);
+    setQuickStyleTag(null);
+    setError(null);
+    try {
+      const tag = await generateQuickStyleTag({
+        genre: selections.genre,
+        mood: selections.mood,
+        vocal: selections.vocal,
+        instrument: customInstrument || selections.instrument
+      });
+      setQuickStyleTag(tag);
+      setTimeout(() => {
+        document.getElementById('quick-result')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } catch (err: any) {
+      if (err.message?.includes("Requested entity was not found")) {
+        setHasApiKey(false);
+        alert("API 키가 유효하지 않거나 만료되었습니다. 다시 선택해주세요.");
+      } else {
+        setError('스타일 태그 생성에 실패했습니다.');
+      }
+    } finally {
+      setIsQuickLoading(false);
+    }
+  };
 
-    function renderResults(rawText) {
-        const resultDiv = document.getElementById('result');
-        const cardArea = document.getElementById('song-cards-area');
-        const packageArea = document.getElementById('package-display');
-        resultDiv.style.display = 'block';
-        cardArea.innerHTML = '';
-        
-        const songs = rawText.split(/🎵 곡 \d+:/g).filter(s => s.trim().length > 100);
-        songs.forEach((song, i) => {
-            const lines = song.trim().split('\n');
-            const title = lines[0].replace('제목:', '').trim();
-            const style = lines[1].replace('스타일 태그:', '').trim();
-            const lyrics = lines.slice(2).join('\n').trim();
+  const handleGenerate = async () => {
+    const finalTheme = customTheme.trim() || selections.theme;
+    if (!finalTheme && !selections.genre) {
+      alert('최소한 장르를 선택하거나 가사 주제를 입력해주세요!');
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    setResult(null);
+    setQuickStyleTag(null);
+    try {
+      const finalInstrument = customInstrument.trim() || selections.instrument || '자유롭게';
+      const finalUsage = customUsage.trim() || selections.usage || '일반 감상';
+      const response = await generateSunoPrompts({
+        ...selections,
+        theme: finalTheme,
+        instrument: finalInstrument,
+        usage: finalUsage,
+      });
+      setResult(response);
+    } catch (err: any) {
+      if (err.message?.includes("Requested entity was not found")) {
+        setHasApiKey(false);
+        alert("API 키가 유효하지 않거나 만료되었습니다. 다시 선택해주세요.");
+      } else {
+        setError('풀 패키지 생성 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-            const card = document.createElement('div');
-            card.className = 'song-card';
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3>#${i+1} ${title}</h3>
-                    <div>
-                        <button style="margin-right:5px;" onclick="copy('${title.replace(/'/g,"\\'")}','제목')">제목 복사</button>
-                        <button onclick="copy('${lyrics.replace(/\n/g,'\\n').replace(/'/g,"\\'")}','가사')">가사 복사</button>
-                    </div>
+  const copyToClipboard = (text: string, message: string = '복사되었습니다!') => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    alert(message);
+  };
+
+  if (hasApiKey === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-6">
+        <div className="max-w-md w-full bg-white/10 backdrop-blur-2xl p-10 rounded-[3rem] border border-white/20 shadow-2xl text-center">
+          <div className="text-6xl mb-6">🔑</div>
+          <h1 className="text-3xl font-black text-white mb-4 font-gowun tracking-tighter text-pretty">
+            애니한 Suno AI 마스터즈
+          </h1>
+          <p className="text-white/80 mb-8 leading-relaxed font-light">
+            수강생 전용 도구 사용을 위해<br/>
+            본인의 <strong>Google API 키</strong>를 선택해야 합니다.
+          </p>
+          <button
+            onClick={handleOpenKeySelector}
+            className="w-full py-5 bg-white text-[#764ba2] rounded-2xl font-black text-lg hover:bg-slate-100 transition-all shadow-xl active:scale-95 mb-6"
+          >
+            API 키 선택하기
+          </button>
+          <div className="text-xs text-white/50 space-y-2">
+            <p>* 유료 프로젝트(Billing 설정됨)의 키가 필요합니다.</p>
+            <a 
+              href="https://ai.google.dev/gemini-api/docs/billing" 
+              target="_blank" 
+              className="underline hover:text-white"
+            >
+              API 결제 설정 및 문서 확인하기
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (hasApiKey === null) return null;
+
+  return (
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto bg-gradient-to-br from-[#667eea] to-[#764ba2] relative overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none opacity-20 animate-float">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+      </div>
+
+      <header className="text-center mb-12 relative z-10">
+        <h1 className="text-5xl sm:text-6xl font-black text-white mb-4 tracking-tighter font-gowun drop-shadow-lg">
+          🎵 Suno AI 프롬프트 마스터
+        </h1>
+        <p className="text-white/90 text-xl font-light tracking-widest font-gowun">
+          애니한 익스클루시브 : Suno 프롬프트 엔진 & VideoBERT 알고리즘
+        </p>
+      </header>
+
+      <div className="flex justify-between items-center mb-8 relative z-10">
+        <button 
+          onClick={() => window.aistudio.openSelectKey()}
+          className="bg-white/10 backdrop-blur-md text-white/70 border border-white/20 px-6 py-2 rounded-full text-xs font-bold hover:bg-white/20 transition-all"
+        >
+          🔑 키 변경하기
+        </button>
+        <button 
+          onClick={handleReset}
+          className="bg-white/20 backdrop-blur-md text-white border-2 border-white/30 px-8 py-3 rounded-full font-bold hover:bg-white/40 transition-all shadow-xl active:scale-95"
+        >
+          🔄 새로고침 (리셋)
+        </button>
+      </div>
+
+      <main className="space-y-8 relative z-10">
+        <section className="bg-white/95 backdrop-blur-xl p-8 rounded-[2rem] shadow-2xl border border-white/30">
+          <h3 className="text-2xl font-bold text-[#667eea] mb-4">📌 수강생 사용 안내</h3>
+          <ol className="list-decimal list-inside space-y-2 text-slate-700 leading-relaxed font-medium">
+            <li>원하는 음악 옵션을 선택하세요. (최소한 장르 하나는 선택 권장)</li>
+            <li><strong>"단일 스타일 프롬프트 생성"</strong>: Suno AI의 Style of Music 칸에 넣을 태그만 빠르게 만듭니다.</li>
+            <li><strong>"풀 패키지 생성"</strong>: 가사 10곡과 글로벌 유튜브 메타데이터를 함께 생성합니다.</li>
+          </ol>
+        </section>
+
+        {quickStyleTag && (
+          <div id="quick-result" className="bg-slate-900 rounded-[2.5rem] p-10 shadow-2xl border-b-[12px] border-emerald-400 animate-fadeIn">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-emerald-400 font-black text-xs uppercase tracking-[0.4em] mb-1">Quick Style Tag Result</h2>
+                <p className="text-emerald-400/50 text-[10px] uppercase font-bold">Suno AI Style of Music용</p>
+              </div>
+              <button 
+                onClick={() => copyToClipboard(quickStyleTag)}
+                className="text-white bg-emerald-600 px-6 py-2 rounded-xl text-xs font-bold hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20"
+              >📋 태그 복사</button>
+            </div>
+            <code className="block p-7 bg-black/40 text-emerald-300 rounded-[1.5rem] text-xl font-mono break-words border border-white/5">
+              {quickStyleTag}
+            </code>
+          </div>
+        )}
+
+        <SelectionGroup
+          title="Step 1. 🎸 장르 선택 (음악의 색깔)"
+          items={GENRES}
+          selectedValue={selections.genre}
+          onSelect={(val) => handleSelect('genre', val)}
+          required
+        />
+
+        <SelectionGroup
+          title="Step 2. ✨ 분위기 및 감성 선택 (감정의 깊이)"
+          items={MOODS}
+          selectedValue={selections.mood}
+          onSelect={(val) => handleSelect('mood', val)}
+        />
+
+        <SelectionGroup
+          title="Step 3. 🎤 보컬 및 창법 선택 (목소리의 질감)"
+          items={VOCALS}
+          selectedValue={selections.vocal}
+          onSelect={(val) => handleSelect('vocal', val)}
+        />
+
+        <div className="p-8 bg-white rounded-[2rem] shadow-lg border border-slate-100 transition-all hover:shadow-xl">
+          <span className="block text-slate-800 text-lg font-bold mb-4 pl-4 border-l-4 border-[#f093fb]">
+            Step 4. 🎬 사용 용도 및 상황 (공간의 울림)
+          </span>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {USAGES.map((usage) => (
+              <button
+                key={usage.value}
+                onClick={() => { handleSelect('usage', usage.value); setCustomUsage(''); }}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all border ${
+                  selections.usage === usage.value && !customUsage
+                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
+                    : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
+                }`}
+              >
+                {usage.label}
+              </button>
+            ))}
+          </div>
+          <input
+            type="text"
+            value={customUsage}
+            onChange={(e) => { setCustomUsage(e.target.value); handleSelect('usage', ''); }}
+            placeholder="직접 입력: 예) 휴식용 BGM, 키즈 채널 등"
+            className="w-full p-4 rounded-2xl border-2 border-slate-100 focus:ring-2 focus:ring-[#667eea] focus:border-transparent bg-slate-50"
+          />
+        </div>
+
+        <SelectionGroup
+          title="Step 5. 👥 타겟 연령대 선택 (청중의 공감)"
+          items={AGE_GROUPS}
+          selectedValue={selections.targetAge}
+          onSelect={(val) => handleSelect('targetAge', val)}
+        />
+
+        <div className="p-8 bg-white rounded-[2rem] shadow-lg border border-slate-100 transition-all hover:shadow-xl">
+          <span className="block text-slate-800 text-lg font-bold mb-4 pl-4 border-l-4 border-[#f093fb]">
+            Step 6. 🎹 주요 악기 설정 (소리의 도구)
+          </span>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {INSTRUMENTS.map((inst) => (
+              <button
+                key={inst.value}
+                onClick={() => { handleSelect('instrument', inst.value); setCustomInstrument(''); }}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all border ${
+                  selections.instrument === inst.value && !customInstrument
+                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
+                    : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
+                }`}
+              >
+                {inst.label}
+              </button>
+            ))}
+          </div>
+          <input
+            type="text"
+            value={customInstrument}
+            onChange={(e) => { setCustomInstrument(e.target.value); handleSelect('instrument', ''); }}
+            placeholder="직접 입력: 예) 아날로그 신디사이저, 첼로 등"
+            className="w-full p-4 rounded-2xl border-2 border-slate-100 focus:ring-2 focus:ring-[#667eea] focus:border-transparent bg-slate-50"
+          />
+        </div>
+
+        <SelectionGroup
+          title="Step 7. 🌐 가사 언어 설정 (글로벌 소통)"
+          items={LANGUAGES}
+          selectedValue={selections.language}
+          onSelect={(val) => handleSelect('language', val)}
+        />
+
+        <div className="p-8 bg-white rounded-[2rem] shadow-lg border border-slate-100 transition-all hover:shadow-xl">
+          <span className="block text-slate-800 text-lg font-bold mb-4 pl-4 border-l-4 border-[#f093fb]">
+            Step 8. 📝 가사 주제 및 요청 (창작의 핵심)
+          </span>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {THEMES.map((theme) => (
+              <button
+                key={theme.value}
+                onClick={() => { handleSelect('theme', theme.value); setCustomTheme(''); }}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all border ${
+                  selections.theme === theme.value && !customTheme
+                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
+                    : 'bg-slate-50 border-transparent text-slate-500 hover:bg-slate-100'
+                }`}
+              >
+                {theme.label}
+              </button>
+            ))}
+          </div>
+          <textarea
+            value={customTheme}
+            onChange={(e) => { setCustomTheme(e.target.value); handleSelect('theme', ''); }}
+            placeholder="가사 주제를 자유롭게 적어주세요. (예: 비 내리는 창가에서 마시는 커피 한 잔의 고요함)"
+            className="w-full h-32 p-6 rounded-2xl border-2 border-slate-100 focus:ring-2 focus:ring-[#667eea] focus:border-transparent resize-none bg-slate-50"
+          />
+        </div>
+
+        <div className="flex flex-col gap-5 max-w-2xl mx-auto pb-10">
+          <button
+            onClick={handleGenerateQuick}
+            disabled={isQuickLoading || isLoading}
+            className={`py-8 rounded-[2rem] text-2xl font-black transition-all shadow-2xl active:scale-95 text-white bg-gradient-to-r from-emerald-500 to-teal-600 ${
+              isQuickLoading ? 'animate-pulse opacity-80' : 'hover:shadow-emerald-500/30'
+            }`}
+          >
+            {isQuickLoading ? '⚡ 태그 생성 중...' : '⚡ 단일 스타일 프롬프트 생성'}
+          </button>
+          
+          <button
+            onClick={handleGenerate}
+            disabled={isLoading || isQuickLoading}
+            className={`py-8 rounded-[2rem] text-2xl font-black transition-all shadow-2xl active:scale-95 text-white ${
+              isLoading ? 'bg-slate-400 animate-pulse' : 'bg-gradient-to-r from-[#667eea] to-[#764ba2] hover:shadow-indigo-500/30'
+            }`}
+          >
+            {isLoading ? '🚀 풀 패키지 엔진 가동 중...' : '🚀 풀 패키지 생성 (가사 10곡 포함)'}
+          </button>
+        </div>
+
+        {error && <div className="p-6 bg-rose-500 text-white rounded-[2rem] text-center font-bold shadow-xl">{error}</div>}
+
+        {result && (
+          <div className="mt-20 space-y-16 pb-32 animate-fadeIn">
+            <div className="bg-slate-900 rounded-[2.5rem] p-10 shadow-2xl border-b-[12px] border-[#f093fb]">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-[#f093fb] font-black text-xs uppercase tracking-[0.4em] mb-1">Master Suno Style Tag</h2>
+                  <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Suno AI Style of Music용</p>
                 </div>
-                <div class="style-tag-box">${style}</div>
-                <pre>${lyrics}</pre>
-            `;
-            cardArea.appendChild(card);
-        });
+                <button 
+                  onClick={() => copyToClipboard(result.commonStyleTag)}
+                  className="text-white bg-gradient-to-r from-[#667eea] to-[#764ba2] px-6 py-3 rounded-2xl text-sm font-black hover:scale-105 active:scale-95"
+                >🏷️ 태그 복사</button>
+              </div>
+              <code className="block p-7 bg-black/40 text-[#f093fb] rounded-[1.5rem] text-xl font-mono leading-relaxed border border-white/5 break-words">
+                {result.commonStyleTag}
+              </code>
+            </div>
 
-        const pkg = rawText.split('## PART 2:')[1] || "데이터 분석 중...";
-        packageArea.innerHTML = `<pre style="background:white; padding:25px; border-radius:15px;">${pkg.trim()}</pre>`;
-        window.scrollTo({ top: resultDiv.offsetTop - 50, behavior: 'smooth' });
-    }
+            <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-red-600 to-red-800 p-8 text-center text-white">
+                <h2 className="text-3xl font-black font-gowun mb-2">🌍 글로벌 유튜브 업로드 패키지</h2>
+                <p className="font-light opacity-90 text-sm">6개국어 번역 및 검색 최적화 완료</p>
+              </div>
+              <div className="p-8">
+                <div className="flex flex-wrap gap-2 mb-8 p-2 bg-slate-50 rounded-[2rem]">
+                  {languagesOptions.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => setActiveTab(lang.code)}
+                      className={`px-6 py-3 rounded-full font-bold transition-all text-sm flex items-center gap-2 ${
+                        activeTab === lang.code ? 'bg-[#667eea] text-white shadow-xl' : 'bg-white text-slate-500 hover:bg-slate-100'
+                      }`}
+                    >
+                      <span>{lang.flag}</span> <span>{lang.name}</span>
+                    </button>
+                  ))}
+                </div>
 
-    document.getElementById('generate-btn').onclick = async () => {
-        if(!apiKey) return alert('API 키를 입력해주세요!');
-        const finalTheme = document.getElementById('custom-theme').value || selections.theme;
-        if(!finalTheme) return alert('주제를 선택하거나 입력해주세요!');
+                <div className="space-y-6">
+                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 relative group">
+                    <span className="text-[10px] font-black uppercase text-[#667eea] block mb-2 tracking-widest">Video Title</span>
+                    <p className="text-xl font-black text-slate-900 leading-tight">{result.youtubePackage[activeTab].title}</p>
+                    <button onClick={() => copyToClipboard(result.youtubePackage[activeTab].title)} className="absolute top-4 right-4 text-xs font-bold text-slate-400">📋</button>
+                  </div>
+                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 relative">
+                    <span className="text-[10px] font-black uppercase text-[#667eea] block mb-2 tracking-widest">Description & Timestamps</span>
+                    <pre className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{result.youtubePackage[activeTab].description}</pre>
+                    <button onClick={() => copyToClipboard(result.youtubePackage[activeTab].description)} className="absolute top-4 right-4 text-xs font-bold text-slate-400">📋</button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        const btn = document.getElementById('generate-btn');
-        btn.disabled = true;
-        btn.innerText = '⏳ 10곡 글로벌 패키지 생성 중...';
+            <div className="grid grid-cols-1 gap-12">
+              <div className="flex items-center gap-4">
+                <div className="bg-white text-[#667eea] w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black shadow-xl">10</div>
+                <h2 className="text-3xl font-black text-white">Song Variations</h2>
+              </div>
+              {result.ideas.map((idea, idx) => (
+                <div key={idx} className="bg-white rounded-[2.5rem] p-10 shadow-2xl border border-slate-100 group transition-all hover:scale-[1.01]">
+                  <div className="flex flex-col lg:flex-row items-start justify-between mb-8 gap-4">
+                    <div className="flex-1">
+                      <span className="text-[#667eea] font-black text-[10px] uppercase tracking-widest mb-2 block">Variation #{idx + 1}</span>
+                      <h3 className="text-3xl font-black text-slate-900 leading-tight group-hover:text-[#667eea] transition-colors">{idea.title}</h3>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => copyToClipboard(idea.title, '제목이 복사되었습니다!')}
+                        className="px-6 py-3 bg-slate-50 text-slate-500 rounded-2xl text-[11px] font-black hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
+                      >
+                        🏷️ 제목 복사
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(idea.lyrics)}
+                        className="px-6 py-3 bg-[#667eea]/5 text-[#667eea] rounded-2xl text-[11px] font-black hover:bg-[#667eea] hover:text-white transition-all border border-[#667eea]/20"
+                      >
+                        {selections.vocal.includes('Instrumental') ? '🎼 구성 복사' : '📝 가사 복사'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-10 bg-slate-50 rounded-[2rem] text-slate-700 text-[16px] whitespace-pre-wrap leading-loose font-medium border border-slate-100 italic">
+                    {idea.lyrics}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+      
+      <footer className="mt-32 border-t border-white/20 pt-16 text-center pb-16 relative z-10">
+        <p className="text-white/60 text-[11px] font-black uppercase tracking-[0.5em] mb-3 italic">AniHanTV Production Engine</p>
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">© Suno AI Prompt Master powered by Gemini 3 Pro</p>
+      </footer>
+    </div>
+  );
+};
 
-        try {
-            const prompt = `Suno AI용 10곡 패키지와 유튜브 글로벌 세트를 생성하라. 
-            조건: 장르(${selections.genre}), 분위기(${selections.mood}), 보컬(${selections.vocal}), 용도(${selections.usage}), 악기(${selections.instrument}), BPM(${selections.bpm}), 연령대(${selections.ageGroup}), 주제(${finalTheme})
-            ## PART 1: 10곡 (🎵 곡 1: 제목: / 스타일 태그: / 가사: 형식)
-            ## PART 2: 유튜브 패키지 (6개국어)`;
-
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-
-            const resultData = await res.json();
-            if(!res.ok) throw new Error(resultData.error.message);
-            renderResults(resultData.candidates[0].content.parts[0].text);
-        } catch(e) {
-            alert('에러: ' + e.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerText = '🌍 글로벌 유튜브 패키지 생성 (10곡 + 6개국어)';
-        }
-    };
-
-    document.getElementById('save-api-key-btn').onclick = () => {
-        apiKey = document.getElementById('api-key-input').value.trim();
-        localStorage.setItem('gemini_api_key', apiKey);
-        alert('✅ 저장 완료!');
-    };
-
-    init();
-</script>
-</body>
-</html>
+export default App;
