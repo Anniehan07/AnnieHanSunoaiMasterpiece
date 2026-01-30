@@ -6,108 +6,93 @@
     <title>🎵 Suno AI 프롬프트 마스터 - 애니한tv</title>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 기본 레이아웃 및 디자인 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --gradient-start: #667eea; --gradient-end: #764ba2; --accent: #f093fb; --dark: #1a1a2e; --light: #f8f9fa; }
-        body { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 40px 20px; color: #333; }
+        :root { --gradient-start: #667eea; --gradient-end: #764ba2; --accent: #f093fb; --dark: #1a1a2e; --youtube: #FF0000; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 40px 20px; }
         .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
-        .header { text-align: center; margin-bottom: 50px; color: white; animation: fadeInDown 0.8s ease-out; }
+        .header { text-align: center; margin-bottom: 50px; color: white; }
         h1 { font-family: 'Gowun Batang', serif; font-size: 3.5em; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 
-        /* API 및 옵션 섹션 */
-        .api-key-section, .step, .instruction-box { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 30px; border-radius: 25px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-        .step-title { font-size: 1.4em; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 20px; margin-bottom: 20px; }
+        /* 섹션 공통 스타일 */
+        .api-key-section, .step, .instruction-box { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 35px; border-radius: 25px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+        .step-title { font-size: 1.4em; font-weight: 700; color: var(--dark); margin-bottom: 20px; display: block; border-left: 5px solid var(--accent); padding-left: 20px; }
         .btn-group { display: flex; flex-wrap: wrap; gap: 12px; }
         button { padding: 12px 24px; border: 2px solid #e9ecef; border-radius: 50px; background: #f8f9fa; cursor: pointer; transition: 0.3s; font-weight: 500; }
-        button.active { background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%); color: white; border: none; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
-        .main-btn { width: 100%; padding: 25px; background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%); color: white; border: none; border-radius: 20px; font-size: 1.5em; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3); }
+        button.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; border: none; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
         
-        /* 결과 출력 영역 (대표님 요청 레이아웃 복구) */
+        /* 메인 버튼 */
+        .main-btn { width: 100%; padding: 25px; background: linear-gradient(135deg, #FF0000, #cc0000); color: white; border: none; border-radius: 20px; font-size: 1.5em; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 10px 30px rgba(255,0,0,0.3); }
+
+        /* 결과 UI */
         #result { margin-top: 50px; display: none; }
-        .package-section { background: #fff; border-radius: 20px; padding: 30px; margin-bottom: 40px; border: 2px solid var(--accent); }
-        .package-tab { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #f1f3f5; padding-bottom: 15px; }
-        .copy-box { background: #f8f9fa; padding: 20px; border-radius: 15px; position: relative; margin-bottom: 15px; border: 1px solid #e9ecef; }
-        .copy-btn-sm { position: absolute; top: 15px; right: 15px; background: var(--dark); color: white; border: none; padding: 5px 12px; border-radius: 5px; font-size: 0.8em; }
-        .song-card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 25px; border-top: 6px solid var(--accent); position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .song-card h3 { font-size: 1.8em; margin-bottom: 15px; color: var(--dark); }
-        .style-tag-box { background: #f1f3f5; padding: 10px 15px; border-radius: 10px; font-family: monospace; font-size: 0.9em; color: #666; margin-bottom: 20px; }
-        pre { white-space: pre-wrap; line-height: 1.8; font-size: 1.05em; color: #444; }
-        .loading { text-align: center; color: white; padding: 50px; font-size: 1.5em; }
+        .package-section { background: #fff; border-radius: 25px; padding: 40px; margin-bottom: 40px; border: 2px solid var(--youtube); }
+        .copy-box { background: #f8f9fa; padding: 20px; border-radius: 15px; position: relative; margin-bottom: 15px; border: 1px solid #dee2e6; }
+        .copy-btn-sm { position: absolute; top: 15px; right: 15px; background: var(--dark); color: white; border: none; padding: 6px 15px; border-radius: 8px; font-size: 0.85em; cursor: pointer; }
+        .song-card { background: white; border-radius: 25px; padding: 35px; margin-bottom: 30px; border-top: 8px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .style-tag-box { background: #f1f3f5; padding: 12px 20px; border-radius: 12px; font-family: monospace; color: #555; margin-bottom: 25px; }
+        pre { white-space: pre-wrap; line-height: 1.9; font-size: 1.1em; }
+        input[type="text"], textarea { width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #e9ecef; margin-top: 15px; font-family: inherit; font-size: 1em; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1>🎵 Suno AI 프롬프트 마스터</h1>
-        <p class="subtitle">✨ 애니한 익스클루시브 : 108만 유튜버의 노하우 ✨</p>
+        <p>✨ 애니한 익스클루시브 : 108만 유튜버의 노하우 ✨</p>
     </div>
 
     <div class="api-key-section">
         <h3>🔑 Google API 키 설정</h3>
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <input type="password" id="api-key-input" placeholder="AIzaSy... 형식의 키 입력" style="flex:1; padding:15px; border-radius:12px; border:2px solid #eee;">
+        <div style="display:flex; gap:12px; margin-top:20px;">
+            <input type="password" id="api-key-input" placeholder="AIzaSy... 형식의 키 입력" style="flex:1;">
             <button id="save-api-key-btn" style="background:var(--gradient-start); color:white;">💾 저장</button>
         </div>
-        <p id="api-status" style="margin-top:10px; font-size:0.9em; display:none;"></p>
     </div>
 
     <div id="options-area">
-        <div class="step">
-            <span class="step-title">🎸 1. 장르 선택</span>
-            <div class="btn-group" id="genre-btns"></div>
-        </div>
-        <div class="step">
-            <span class="step-title">✨ 2. 분위기 선택</span>
-            <div class="btn-group" id="mood-btns"></div>
-        </div>
-        <div class="step">
-            <span class="step-title">🎤 3. 보컬 선택</span>
-            <div class="btn-group" id="vocal-btns"></div>
-        </div>
-        <div class="step">
-            <span class="step-title">👥 7. 타겟 연령대 선택</span>
-            <div class="btn-group" id="age-group-btns"></div>
-        </div>
-        <div class="step">
-            <span class="step-title">🌐 8. 가사 언어 설정</span>
-            <div class="btn-group" id="lang-btns"></div>
-        </div>
-        <div class="step">
-            <span class="step-title">📝 9. 가사 주제</span>
-            <textarea id="custom-theme" placeholder="여기에 상세 주제를 적어주세요 (필수)"></textarea>
-        </div>
+        <div class="step"><span class="step-title">🎸 1. 장르 선택</span><div class="btn-group" id="genre-btns"></div></div>
+        <div class="step"><span class="step-title">✨ 2. 분위기 선택</span><div class="btn-group" id="mood-btns"></div></div>
+        <div class="step"><span class="step-title">🎤 3. 보컬 선택</span><div class="btn-group" id="vocal-btns"></div></div>
+        <div class="step"><span class="step-title">🎬 4. 사용 용도 및 상황</span><div class="btn-group" id="usage-btns"></div><input type="text" id="custom-usage" placeholder="예: 요리 브이로그, 명상용 등 직접 입력"></div>
+        <div class="step"><span class="step-title">🎹 5. 주요 악기 설정</span><div class="btn-group" id="instrument-btns"></div><input type="text" id="custom-instrument" placeholder="예: 싱잉볼, 가야금 등 직접 입력"></div>
+        <div class="step"><span class="step-title">⚡ 6. 속도 (BPM) 설정</span><div class="btn-group" id="bpm-btns"></div></div>
+        <div class="step"><span class="step-title">👥 7. 타겟 연령대 선택</span><div class="btn-group" id="ageGroup-btns"></div></div>
+        <div class="step"><span class="step-title">🌐 8. 가사 언어 설정</span><div class="btn-group" id="lang-btns"></div></div>
+        <div class="step"><span class="step-title">📝 9. 가사 주제 및 요청</span><div class="btn-group" id="theme-btns"></div><textarea id="custom-theme" placeholder="가사 주제를 상세히 적어주세요 (필수)"></textarea></div>
     </div>
 
-    <button class="main-btn" id="generate-btn">🌍 글로벌 유튜브 패키지 생성 (10곡 세트)</button>
+    <button class="main-btn" id="generate-btn">🌍 글로벌 유튜브 패키지 생성 (10곡 + 6개국어)</button>
 
     <div id="result">
-        <div class="package-section" id="youtube-package">
-            <h2 style="margin-bottom:20px;">🌍 글로벌 유튜브 업로드 패키지</h2>
-            <div class="package-tab" id="lang-tabs"></div>
+        <div class="package-section">
+            <h2 style="text-align:center; margin-bottom:30px;">🌍 글로벌 유튜브 업로드 패키지</h2>
             <div id="package-display"></div>
         </div>
+        <h2 style="color:white; margin-bottom:20px;">🎵 10 Song Variations</h2>
         <div id="song-cards-area"></div>
     </div>
 </div>
 
 <script>
-    // [데이터 설정]
     const data = {
-        genres: ["🎹 시티팝", "🎧 로파이", "🎸 K-록", "🧘 명상", "💫 K-pop", "💔 발라드", "👶 자장가"],
-        moods: ["🌙 잔잔한", "😢 슬픈", "🤗 따뜻한", "⚡ 활기찬", "💕 로맨틱"],
-        vocals: ["👩 맑은 여성", "🎙️ 허스키 남성", "👦 소년", "👧 소녀", "🎼 연주곡"],
-        ageGroups: ["👶 유아", "🎒 10대", "💼 20대", "👔 3040", "🎩 5060", "🌍 전연령"],
-        langs: ["🇰🇷 한국어", "🇺🇸 영어", "🌏 한+영 섞어서"]
+        genres: ["🎹 시티팝", "🎧 로파이", "🌊 칠웨이브", "🎸 K-록", "👥 합창", "🧘 명상", "💫 K-pop", "💔 발라드", "🎺 재즈", "🎤 팝", "🎵 힙합", "🌌 뉴에이지", "🌫️ 앰비언트", "🎶 트로트", "🎷 블루스", "🤠 컨트리", "🪕 포크", "🏝️ 레게", "✨ 디스코", "🎸 록", "🔊 전자음악", "🎼 R&B", "🎹 소울", "🎛️ 신스팝", "☁️ 드림 팝", "🎨 인디팝", "🙏 가스펠", "🎺 스윙", "💃 라틴", "🎵 이지리스닝", "👶 자장가", "🧸 동요", "🎄 캐롤"],
+        moods: ["🌙 잔잔한", "😢 깊은 슬픔", "🌃 우울한 새벽", "🙏 경건한", "🤗 따스한 위로", "☮️ 평화로운", "☁️ 포근한", "⚡ 에너지 폭발", "💕 로맨틱", "🌅 일몰같은", "🌌 우주 같은", "🖤 다크한", "🍃 시원한", "🚗 드라이브", "💪 도전적인", "🏔️ 웅장한", "🥰 귀여운"],
+        vocals: ["👶 어린이합창", "👥 어른합창", "👩 여성(맑음)", "✨ 여성(에테리얼)", "💕 여성(로맨틱)", "🎙️ 남성(허스키)", "👦 소년", "👧 소녀", "🔥 남성(열정)", "🎵 남녀코러스", "🤖 보코더", "🤫 속삭이는", "🎤 랩(남)", "🎤 랩(여)", "🎭 오페라(남)", "🎭 오페라(여)", "🌬️ 공기반소리반", "🎼 연주곡"],
+        usages: ["📹 유튜브 브이로그", "🎮 게임 방송", "📚 공부/집중", "💪 운동/피트니스", "😴 숙면/명상", "☕ 카페 분위기", "📱 쇼츠/틱톡", "⛪ 예배/묵상"],
+        instruments: ["🎹 그랜드 피아노", "🎸 어쿠스틱 기타", "⚡ 일렉 기타", "🎵 오르골", "🎷 색소폰", "🎻 바이올린", "🎻 첼로", "🔔 싱잉볼", "🎛️ 신디사이저"],
+        bpms: ["😴 초저속(40-50)", "🌙 매우느림(50-70)", "🧘 느림(70-90)", "🚶 보통(90-110)", "😊 약간빠름(110-130)", "🏃 빠름(130-150)", "💪 매우빠름(150-170)", "⚡ 초고속(170+)"],
+        ageGroups: ["👶 유아 (0-7세)", "🎒 10대", "💼 20대", "👔 30-40대", "🎩 50-60대", "🌍 전 연령대"],
+        langs: ["🇰🇷 한국어", "🇺🇸 영어", "🌏 한+영 섞어서"],
+        themes: ["💕 첫사랑", "👶 자장가", "🌅 새벽 묵상", "💔 이별", "🤝 재회", "😊 짝사랑", "💪 자기 사랑", "🔥 용기", "✨ 갓생", "👤 주체적 나", "🎯 실패와 극복", "💎 자신감", "🏠 향수", "🌧️ 비오는 날", "✈️ 여행", "🙏 감사", "🎼 연주곡", "🎄 크리스마스"]
     };
 
-    const selections = { genre: null, mood: null, vocal: null, ageGroup: null, lang: null };
+    const selections = { genre: null, mood: null, vocal: null, usage: null, instrument: null, bpm: null, ageGroup: null, lang: null, theme: null };
     let apiKey = localStorage.getItem('gemini_api_key') || '';
 
-    // [초기화]
     function init() {
         if(apiKey) document.getElementById('api-key-input').value = apiKey;
         Object.keys(selections).forEach(key => {
-            const container = document.getElementById(`${key.replace(/[A-Z]/g, m => "-" + m.toLowerCase())}-btns`);
+            const container = document.getElementById(key + '-btns');
             if(!container) return;
             data[key + 's'].forEach(item => {
                 const btn = document.createElement('button');
@@ -122,32 +107,18 @@
         });
     }
 
-    // [API 키 저장]
-    document.getElementById('save-api-key-btn').onclick = () => {
-        const val = document.getElementById('api-key-input').value.trim();
-        if(val) {
-            apiKey = val;
-            localStorage.setItem('gemini_api_key', val);
-            alert('✅ API 키가 저장되었습니다!');
-        }
-    };
-
-    // [복사 함수]
     async function copy(text, label) {
         await navigator.clipboard.writeText(text);
         alert(`✓ ${label} 복사 완료!`);
     }
 
-    // [핵심: 결과 파싱 및 카드 생성]
-    function displayResults(rawText) {
+    function renderResults(rawText) {
         const resultDiv = document.getElementById('result');
         const cardArea = document.getElementById('song-cards-area');
         const packageArea = document.getElementById('package-display');
-        
         resultDiv.style.display = 'block';
         cardArea.innerHTML = '';
         
-        // 1. 10곡 카드 생성
         const songs = rawText.split(/🎵 곡 \d+:/g).filter(s => s.trim().length > 100);
         songs.forEach((song, i) => {
             const lines = song.trim().split('\n');
@@ -158,10 +129,10 @@
             const card = document.createElement('div');
             card.className = 'song-card';
             card.innerHTML = `
-                <div style="display:flex; justify:space-between; align-items:center;">
-                    <h3>Song Variation #${i+1}: ${title}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3>#${i+1} ${title}</h3>
                     <div>
-                        <button onclick="copy('${title.replace(/'/g,"\\'")}','제목')">제목 복사</button>
+                        <button style="margin-right:5px;" onclick="copy('${title.replace(/'/g,"\\'")}','제목')">제목 복사</button>
                         <button onclick="copy('${lyrics.replace(/\n/g,'\\n').replace(/'/g,"\\'")}','가사')">가사 복사</button>
                     </div>
                 </div>
@@ -171,50 +142,47 @@
             cardArea.appendChild(card);
         });
 
-        // 2. 유튜브 패키지 출력
         const pkg = rawText.split('## PART 2:')[1] || "데이터 분석 중...";
-        packageArea.innerHTML = `<pre style="background:white; padding:20px; border-radius:10px;">${pkg.trim()}</pre>`;
-        
+        packageArea.innerHTML = `<pre style="background:white; padding:25px; border-radius:15px;">${pkg.trim()}</pre>`;
         window.scrollTo({ top: resultDiv.offsetTop - 50, behavior: 'smooth' });
     }
 
-    // [API 호출 메인]
     document.getElementById('generate-btn').onclick = async () => {
-        if(!apiKey) return alert('API 키를 먼저 입력해주세요!');
-        const theme = document.getElementById('custom-theme').value;
-        if(!theme) return alert('가사 주제를 적어주세요!');
+        if(!apiKey) return alert('API 키를 입력해주세요!');
+        const finalTheme = document.getElementById('custom-theme').value || selections.theme;
+        if(!finalTheme) return alert('주제를 선택하거나 입력해주세요!');
 
         const btn = document.getElementById('generate-btn');
         btn.disabled = true;
-        btn.innerText = '⏳ AI가 10곡 패키지를 생성 중입니다...';
+        btn.innerText = '⏳ 10곡 글로벌 패키지 생성 중...';
 
         try {
-            const prompt = `[명령] Suno AI용 10곡 패키지와 유튜브 글로벌 세트를 생성하라.
-            변수: 장르(${selections.genre}), 연령대(${selections.ageGroup}), 주제(${theme})
-            
-            ## PART 1: 10곡 생성
-            형식: 🎵 곡 1: 제목: / 스타일 태그: / 가사: (이 형식을 10번 반복)
-            
-            ## PART 2: 유튜브 패키지 (6개국어 번역 포함)`;
+            const prompt = `Suno AI용 10곡 패키지와 유튜브 글로벌 세트를 생성하라. 
+            조건: 장르(${selections.genre}), 분위기(${selections.mood}), 보컬(${selections.vocal}), 용도(${selections.usage}), 악기(${selections.instrument}), BPM(${selections.bpm}), 연령대(${selections.ageGroup}), 주제(${finalTheme})
+            ## PART 1: 10곡 (🎵 곡 1: 제목: / 스타일 태그: / 가사: 형식)
+            ## PART 2: 유튜브 패키지 (6개국어)`;
 
-            // ✅ 최신 안정 버전 API 주소 사용
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-            const res = await fetch(url, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
 
-            const data = await res.json();
-            if(!res.ok) throw new Error(data.error?.message || 'API 오류');
-            
-            displayResults(data.candidates[0].content.parts[0].text);
+            const resultData = await res.json();
+            if(!res.ok) throw new Error(resultData.error.message);
+            renderResults(resultData.candidates[0].content.parts[0].text);
         } catch(e) {
-            alert('에러 발생: ' + e.message);
+            alert('에러: ' + e.message);
         } finally {
             btn.disabled = false;
-            btn.innerText = '🌍 글로벌 유튜브 패키지 생성 (10곡 세트)';
+            btn.innerText = '🌍 글로벌 유튜브 패키지 생성 (10곡 + 6개국어)';
         }
+    };
+
+    document.getElementById('save-api-key-btn').onclick = () => {
+        apiKey = document.getElementById('api-key-input').value.trim();
+        localStorage.setItem('gemini_api_key', apiKey);
+        alert('✅ 저장 완료!');
     };
 
     init();
