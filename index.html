@@ -1,100 +1,37 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Suno AI 프롬프트 마스터 - 애니한tv</title>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>Suno AI Prompt Master</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* [1. 디자인 테마: 보라색 그라데이션 복구] */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --gradient-start: #667eea; --gradient-end: #764ba2; --accent: #f093fb; --dark: #1a1a2e; --youtube: #FF0000; }
-        body { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 40px 20px; color: #333; }
-        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
-        .header { text-align: center; margin-bottom: 50px; color: white; }
-        h1 { font-family: 'Gowun Batang', serif; font-size: 3.5em; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-
-        /* [2. 옵션 섹션 스타일: 스크린샷 디자인 완벽 재현] */
-        .api-key-section, .step { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 35px; border-radius: 25px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-        .step-title { font-size: 1.4em; font-weight: 700; color: var(--dark); margin-bottom: 20px; display: block; border-left: 5px solid var(--accent); padding-left: 20px; }
-        .btn-group { display: flex; flex-wrap: wrap; gap: 12px; }
-        button { padding: 12px 24px; border: 2px solid #e9ecef; border-radius: 50px; background: #f8f9fa; cursor: pointer; transition: 0.3s; font-weight: 500; }
-        button.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; border: none; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
-        .main-btn { width: 100%; padding: 25px; background: linear-gradient(135deg, #FF0000, #cc0000); color: white; border: none; border-radius: 20px; font-size: 1.5em; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 10px 30px rgba(255,0,0,0.3); }
-        input, textarea { width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #e9ecef; margin-top: 15px; font-size: 1em; }
-
-        /* [3. 결과 UI: 유튜브 상단 + 10곡 카드 하단] */
-        #result { margin-top: 50px; display: none; }
-        .package-section { background: #fff; border-radius: 25px; padding: 40px; margin-bottom: 40px; border: 2px solid var(--youtube); }
-        .song-card { background: white; border-radius: 25px; padding: 35px; margin-bottom: 30px; border-top: 8px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.1); position: relative; }
-        pre { white-space: pre-wrap; line-height: 1.9; font-size: 1.1em; color: #333; }
-        .copy-btn-sm { background: var(--dark); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 0.85em; cursor: pointer; margin-left: 5px; }
+        body { font-family: 'Pretendard', sans-serif; }
+        .font-gowun { font-family: 'Gowun Batang', serif; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+            animation: float 20s ease-in-out infinite;
+        }
     </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
-<body>
-<div class="container">
-    <div class="header">
-        <h1>🎵 Suno AI 프롬프트 마스터</h1>
-        <p>✨ 애니한 익스클루시브 : 108만 유튜버의 노하우 ✨</p>
-    </div>
-
-    <div class="api-key-section">
-        <h3>🔑 Google API 키 설정</h3>
-        <div style="display:flex; gap:12px; margin-top:20px;">
-            <input type="password" id="api-key-input" placeholder="AIzaSy... 형식의 키 입력" style="margin-top:0;">
-            <button id="save-api-key-btn" style="background:var(--gradient-start); color:white;">💾 저장</button>
-        </div>
-    </div>
-
-    <div id="options-area">
-        <div class="step"><span class="step-title">🎸 1. 장르 선택</span><div class="btn-group" id="genre-btns"></div></div>
-        <div class="step"><span class="step-title">✨ 2. 분위기 선택</span><div class="btn-group" id="mood-btns"></div></div>
-        <div class="step"><span class="step-title">🎤 3. 보컬 선택</span><div class="btn-group" id="vocal-btns"></div></div>
-        <div class="step"><span class="step-title">🎬 4. 사용 용도 및 상황</span><div class="btn-group" id="usage-btns"></div><input type="text" id="custom-usage" placeholder="예: 요리 브이로그 등 직접 입력"></div>
-        <div class="step"><span class="step-title">🎹 5. 주요 악기 설정</span><div class="btn-group" id="instrument-btns"></div><input type="text" id="custom-instrument" placeholder="예: 싱잉볼 등 직접 입력"></div>
-        <div class="step"><span class="step-title">⚡ 6. 속도 (BPM) 설정</span><div class="btn-group" id="bpm-btns"></div></div>
-        <div class="step"><span class="step-title">👥 7. 타겟 연령대 선택</span><div class="btn-group" id="ageGroup-btns"></div></div>
-        <div class="step"><span class="step-title">🌐 8. 가사 언어 설정</span><div class="btn-group" id="lang-btns"></div></div>
-        <div class="step"><span class="step-title">📝 9. 가사 주제 및 요청</span><div class="btn-group" id="theme-btns"></div><textarea id="custom-theme" placeholder="가사 주제를 상세히 적어주세요 (필수)"></textarea></div>
-    </div>
-
-    <button class="main-btn" id="generate-btn">🌍 글로벌 유튜브 패키지 생성 (10곡 + 6개국어)</button>
-
-    <div id="result">
-        <div class="package-section">
-            <h2 style="text-align:center; margin-bottom:30px;">🌍 글로벌 유튜브 업로드 패키지</h2>
-            <div id="package-display"></div>
-        </div>
-        <h2 style="color:white; margin-bottom:20px;">🎵 10 Song Variations</h2>
-        <div id="song-cards-area"></div>
-    </div>
-</div>
-
-<script>
-    // [데이터 전량 복구]
-    const data = {
-        genres: ["🎹 시티팝", "🎧 로파이", "🎸 K-록", "🧘 명상", "💫 K-pop", "💔 발라드", "👶 자장가"],
-        moods: ["🌙 잔잔한", "😢 깊은 슬픔", "🤗 따스한 위로", "⚡ 에너지 폭발", "💕 로맨틱"],
-        vocals: ["👩 여성(맑음)", "🎙️ 남성(허스키)", "👦 소년", "👧 소녀", "🎼 연주곡"],
-        usages: ["📹 유튜브 브이로그", "📱 쇼츠/틱톡", "☕ 카페", "😴 숙면/명상"],
-        instruments: ["🎹 피아노", "🎸 기타", "🔔 싱잉볼", "🎛️ 신디사이저"],
-        bpms: ["😴 초저속(40-50)", "🧘 느림(70-90)", "🚶 보통(90-110)", "🏃 빠름(130-150)"],
-        ageGroups: ["👶 유아 (0-7세)", "🎒 10대", "💼 20대", "👔 30-40대", "🎩 50-60대", "🌍 전 연령대"],
-        langs: ["🇰🇷 한국어", "🇺🇸 영어", "🌏 한+영 섞어서"],
-        themes: ["💕 첫사랑", "👶 자장가", "🌅 새벽 묵상", "🙏 감사", "🎄 크리스마스"]
-    };
-
-    const selections = { genre: null, mood: null, vocal: null, usage: null, instrument: null, bpm: null, ageGroup: null, lang: null, theme: null };
-    let apiKey = localStorage.getItem('gemini_api_key') || '';
-
-    function init() {
-        if(apiKey) document.getElementById('api-key-input').value = apiKey;
-        Object.keys(selections).forEach(key => {
-            const container = document.getElementById(key + '-btns');
-            if(!container) return;
-            data[key + 's'].forEach(item => {
-                const btn = document.createElement('button');
-                btn.innerText = item;
-                btn.onclick = () => {
-                    Array.from(container.children).forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+<body class="bg-slate-50 text-slate-900">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
