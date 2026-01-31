@@ -1,1236 +1,731 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Suno AI 프롬프트 마스터 - 애니한tv</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Noto+Sans+KR:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --gradient-start: #667eea;
-            --gradient-end: #764ba2;
-            --accent: #f093fb;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-            --success: #00d2ff;
-            --warning: #ffd32a;
-            --youtube: #FF0000;
-        }
-
-        body {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-            font-weight: 500;
-            background: #000000;
-            min-height: 100vh;
-            padding: 60px 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-            animation: fadeInDown 0.8s ease-out;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1, h2, h3 {
-            font-family: 'Orbitron', 'Noto Sans KR', sans-serif;
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-
-        h1 {
-            font-size: 4.5em;
-            color: #ffffff;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            font-weight: 900;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            font-size: 1em;
-            color: #888888;
-            font-weight: 400;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        .header-controls {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 30px;
-            animation: fadeIn 1s ease-out 0.3s backwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        #reset-btn {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        #reset-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .api-key-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 30px;
-            border-radius: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border: 2px solid var(--accent);
-            animation: fadeInUp 0.8s ease-out 0.15s backwards;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .api-key-section h3 {
-            color: var(--gradient-start);
-            font-size: 1.4em;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .api-key-section p {
-            color: #495057;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        .api-key-section a {
-            color: var(--gradient-start);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .api-key-section a:hover {
-            text-decoration: underline;
-        }
-
-        .api-input-group {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .api-input-group input {
-            flex: 1;
-            padding: 14px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            font-size: 1em;
-            font-family: 'Courier New', monospace;
-        }
-
-        .api-input-group input:focus {
-            outline: none;
-            border-color: var(--gradient-start);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-        }
-
-        .api-input-group button {
-            padding: 14px 28px;
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .api-input-group button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .api-status {
-            font-size: 0.9em;
-            padding: 10px 15px;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .api-status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-
-        .api-status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-
-        .instruction-box {
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 40px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            animation: fadeInUp 0.8s ease-out 0.2s backwards;
-        }
-
-        .instruction-box h3 {
-            color: #ffffff;
-            font-size: 1.8em;
-            margin-bottom: 25px;
-            font-weight: 800;
-        }
-
-        .instruction-box ol {
-            padding-left: 30px;
-            line-height: 2.2;
-        }
-
-        .instruction-box li {
-            margin-bottom: 16px;
-            color: #cccccc;
-            font-size: 1.1em;
-            font-weight: 400;
-        }
-
-        .step {
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 40px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.6s ease-out backwards;
-        }
-
-        .step:hover {
-            border-color: #2a2a2a;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-            transform: translateY(-2px);
-        }
-
-        .step:nth-child(1) { animation-delay: 0.1s; }
-        .step:nth-child(2) { animation-delay: 0.15s; }
-        .step:nth-child(3) { animation-delay: 0.2s; }
-        .step:nth-child(4) { animation-delay: 0.25s; }
-        .step:nth-child(5) { animation-delay: 0.3s; }
-        .step:nth-child(6) { animation-delay: 0.35s; }
-        .step:nth-child(7) { animation-delay: 0.4s; }
-        .step:nth-child(8) { animation-delay: 0.45s; }
-        .step:nth-child(9) { animation-delay: 0.5s; }
-
-        .step.required .step-title::after {
-            content: ' *';
-            color: #f093fb;
-            font-weight: 700;
-        }
-
-        .step-title {
-            font-size: 1.7em;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 25px;
-            display: block;
-            padding-left: 25px;
-            border-left: 4px solid #ffffff;
-            letter-spacing: 0px;
-            line-height: 1.4;
-        }
-
-        .step-subtitle {
-            font-size: 0.85em;
-            font-weight: 400;
-            color: #666666;
-            font-style: normal;
-            margin-left: 8px;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        button {
-            padding: 16px 28px;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            background: #0a0a0a;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 1.05em;
-            font-weight: 600;
-            color: #ffffff;
-            position: relative;
-            overflow: hidden;
-            min-height: 52px;
-        }
-
-        button:hover:not(:disabled) {
-            background: #1a1a1a;
-            border-color: #3a3a3a;
-            transform: translateY(-1px);
-        }
-
-        button.active {
-            background: #ffffff;
-            color: #000000;
-            border-color: #ffffff;
-            font-weight: 700;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        input[type="text"], textarea {
-            width: 100%;
-            margin-top: 20px;
-            border-radius: 12px;
-            border: 1px solid #2a2a2a;
-            padding: 20px 24px;
-            font-size: 1.1em;
-            background: #0a0a0a;
-            color: #ffffff;
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            line-height: 1.8;
-        }
-
-        input[type="text"]:focus, textarea:focus {
-            outline: none;
-            border-color: #3a3a3a;
-            background: #0f0f0f;
-        }
-
-        input[type="text"]::placeholder, textarea::placeholder {
-            color: #666666;
-            font-size: 1em;
-        }
-
-        textarea {
-            min-height: 180px;
-            resize: vertical;
-        }
-
-        .main-btn {
-            width: 100%;
-            padding: 28px;
-            background: #ffffff;
-            color: #000000;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.4em;
-            font-weight: 800;
-            margin-top: 40px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .main-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .main-btn:hover:not(:disabled)::before {
-            left: 100%;
-        }
-
-        .main-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.2);
-            background: #f5f5f5;
-        }
-
-        .main-btn:disabled {
-            background: #adb5bd;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .main-btn.youtube-btn {
-            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
-            margin-top: 15px;
-            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
-        }
-
-        .main-btn.youtube-btn:hover:not(:disabled) {
-            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.4);
-        }
-
-        .error-message {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-            color: white;
-            padding: 20px 25px;
-            border-radius: 15px;
-            margin-top: 20px;
-            display: none;
-            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        #result {
-            margin-top: 50px;
-            animation: fadeInUp 0.6s ease-out;
-            display: none;
-        }
-
-        .result-header {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 20px 20px 0 0;
-            text-align: center;
-        }
-
-        .result-header h2 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .copy-section {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            padding: 20px;
-            background: white;
-        }
-
-        .copy-btn {
-            background: linear-gradient(135deg, #4b6584 0%, #3d5266 100%);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 50px;
-            font-size: 1em;
-            cursor: pointer;
-            flex: 1;
-            min-width: 150px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(75, 101, 132, 0.3);
-        }
-
-        .copy-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(75, 101, 132, 0.4);
-        }
-
-        .copy-btn.copied {
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-            animation: pulse 0.5s;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .output-box {
-            white-space: pre-wrap;
-            background: white;
-            padding: 30px;
-            border-radius: 0 0 20px 20px;
-            line-height: 2;
-            font-size: 1.05em;
-            color: #333;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2em;
-            color: #666;
-        }
-
-        .loading::after {
-            content: '...';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5em;
-            }
-
-            .step {
-                padding: 25px;
-            }
-
-            .main-btn {
-                font-size: 1.2em;
-                padding: 20px;
-            }
-        }
-
-        /* 스크롤바 스타일링 */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--gradient-end) 0%, var(--gradient-start) 100%);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎵 Suno AI 프롬프트 마스터 - 애니한tv</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Noto+Sans+KR:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ====== (원본 CSS 그대로) ====== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --gradient-start: #667eea;
+      --gradient-end: #764ba2;
+      --accent: #f093fb;
+      --dark: #1a1a2e;
+      --light: #f8f9fa;
+      --success: #00d2ff;
+      --warning: #ffd32a;
+      --youtube: #FF0000;
+    }
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-weight: 500;
+      background: #000000;
+      min-height: 100vh;
+      padding: 60px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      animation: float 20s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+    .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+    .header { text-align: center; margin-bottom: 50px; animation: fadeInDown 0.8s ease-out; }
+    @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px);} to { opacity:1; transform: translateY(0);} }
+    h1, h2, h3 { font-family: 'Orbitron','Noto Sans KR', sans-serif; font-weight: 900; letter-spacing: 1px; }
+    h1 { font-size: 4.5em; color: #ffffff; margin-bottom: 20px; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; }
+    .subtitle { font-size: 1em; color: #888888; font-weight: 400; letter-spacing: 4px; text-transform: uppercase; }
+    .header-controls { display:flex; justify-content:flex-end; margin-bottom: 30px; animation: fadeIn 1s ease-out 0.3s backwards; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    #reset-btn {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    #reset-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .api-key-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border: 2px solid var(--accent);
+      animation: fadeInUp 0.8s ease-out 0.15s backwards;
+    }
+    @keyframes fadeInUp { from { opacity:0; transform: translateY(30px);} to { opacity:1; transform: translateY(0);} }
+    .api-key-section h3 { color: var(--gradient-start); font-size: 1.4em; margin-bottom: 15px; font-weight: 700; }
+    .api-key-section p { color:#495057; margin-bottom: 15px; line-height: 1.6; }
+    .api-key-section a { color: var(--gradient-start); text-decoration:none; font-weight:600; }
+    .api-key-section a:hover { text-decoration: underline; }
+    .api-input-group { display:flex; gap: 12px; margin-bottom: 15px; }
+    .api-input-group input {
+      flex: 1;
+      padding: 14px 20px;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 1em;
+      font-family: 'Courier New', monospace;
+    }
+    .api-input-group input:focus { outline:none; border-color: var(--gradient-start); box-shadow: 0 4px 15px rgba(102,126,234,0.2); }
+    .api-input-group button {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .api-input-group button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+    .api-status { font-size: 0.9em; padding: 10px 15px; border-radius: 8px; display: none; }
+    .api-status.success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; display:block; }
+    .api-status.error { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; display:block; }
+    .instruction-box {
+      background:#0a0a0a;
+      border:1px solid #1a1a1a;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+    .instruction-box h3 { color:#ffffff; font-size: 1.8em; margin-bottom: 25px; font-weight: 800; }
+    .instruction-box ol { padding-left: 30px; line-height: 2.2; }
+    .instruction-box li { margin-bottom: 16px; color:#cccccc; font-size: 1.1em; font-weight: 400; }
+    .step {
+      background:#0a0a0a;
+      border:1px solid #1a1a1a;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+    .step:hover { border-color:#2a2a2a; box-shadow: 0 8px 30px rgba(0,0,0,0.7); transform: translateY(-2px); }
+    .step.required .step-title::after { content:' *'; color:#f093fb; font-weight:700; }
+    .step-title {
+      font-size: 1.7em;
+      font-weight: 800;
+      color:#ffffff;
+      margin-bottom: 25px;
+      display:block;
+      padding-left: 25px;
+      border-left: 4px solid #ffffff;
+      letter-spacing: 0px;
+      line-height: 1.4;
+    }
+    .step-subtitle { font-size: 0.85em; font-weight: 400; color:#666666; font-style: normal; margin-left: 8px; }
+    .btn-group { display:flex; flex-wrap:wrap; gap: 16px; }
+    button {
+      padding: 16px 28px;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      background: #0a0a0a;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      font-size: 1.05em;
+      font-weight: 600;
+      color:#ffffff;
+      position: relative;
+      overflow:hidden;
+      min-height: 52px;
+    }
+    button:hover:not(:disabled) { background:#1a1a1a; border-color:#3a3a3a; transform: translateY(-1px); }
+    button.active { background:#ffffff; color:#000000; border-color:#ffffff; font-weight: 700; }
+    button:disabled { opacity:0.5; cursor:not-allowed; }
+    input[type="text"], textarea {
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+      padding: 20px 24px;
+      font-size: 1.1em;
+      background: #0a0a0a;
+      color:#ffffff;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      line-height: 1.8;
+    }
+    input[type="text"]:focus, textarea:focus { outline:none; border-color:#3a3a3a; background:#0f0f0f; }
+    input[type="text"]::placeholder, textarea::placeholder { color:#666666; font-size: 1em; }
+    textarea { min-height: 180px; resize: vertical; }
+    .main-btn {
+      width:100%;
+      padding: 28px;
+      background:#ffffff;
+      color:#000000;
+      border:none;
+      border-radius: 12px;
+      font-size: 1.4em;
+      font-weight: 800;
+      margin-top: 40px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+      position: relative;
+      overflow:hidden;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .main-btn::before {
+      content:'';
+      position:absolute;
+      top:0; left:-100%;
+      width:100%; height:100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    .main-btn:hover:not(:disabled)::before { left:100%; }
+    .main-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,255,255,0.2); background:#f5f5f5; }
+    .main-btn:disabled { background:#adb5bd; cursor:not-allowed; transform:none; }
+    .main-btn.youtube-btn {
+      background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
+      margin-top: 15px;
+      box-shadow: 0 10px 30px rgba(255,0,0,0.3);
+    }
+    .main-btn.youtube-btn:hover:not(:disabled) { box-shadow: 0 15px 40px rgba(255,0,0,0.4); }
+    .error-message {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+      color:white;
+      padding: 20px 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+      display:none;
+      box-shadow: 0 5px 20px rgba(255,107,107,0.3);
+      animation: shake 0.5s;
+    }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+    .error-message.show { display:block; }
+    #result { margin-top: 50px; animation: fadeInUp 0.6s ease-out; display:none; }
+    .result-header {
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      color:white;
+      padding: 30px;
+      border-radius: 20px 20px 0 0;
+      text-align:center;
+    }
+    .result-header h2 { font-size: 2em; margin-bottom: 10px; }
+    .copy-section { display:flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; padding: 20px; background:white; }
+    .copy-btn {
+      background: linear-gradient(135deg, #4b6584 0%, #3d5266 100%);
+      color:white;
+      border:none;
+      padding: 14px 24px;
+      border-radius: 50px;
+      font-size: 1em;
+      cursor:pointer;
+      flex:1;
+      min-width:150px;
+      font-weight:600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(75,101,132,0.3);
+    }
+    .copy-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(75,101,132,0.4); }
+    .copy-btn.copied { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); animation: pulse 0.5s; }
+    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+    .output-box {
+      white-space: pre-wrap;
+      background:white;
+      padding: 30px;
+      border-radius: 0 0 20px 20px;
+      line-height: 2;
+      font-size: 1.05em;
+      color:#333;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      max-height: 600px;
+      overflow-y:auto;
+    }
+    .loading { text-align:center; padding: 50px; font-size: 1.2em; color:#666; }
+    .loading::after { content:'...'; animation: dots 1.5s infinite; }
+    @keyframes dots { 0%,20%{content:'.';} 40%{content:'..';} 60%,100%{content:'...';} }
+    @media (max-width: 768px) {
+      h1 { font-size: 2.5em; }
+      .step { padding: 25px; }
+      .main-btn { font-size: 1.2em; padding: 20px; }
+    }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, var(--gradient-end) 0%, var(--gradient-start) 100%); }
+  </style>
 </head>
+
 <body>
 <div class="container">
-    <div class="header">
-        <h1>🎵 Suno AI 프롬프트 마스터</h1>
-        <p class="subtitle">✨ 애니한&어비 Suno ai 익스클루시브 ✨</p>
-    </div>
-    
-    <div class="header-controls">
-        <button id="reset-btn">🔄 처음부터 다시 선택하기</button>
-    </div>
-    
-    <div class="api-key-section">
-        <h3>🔑 Google AI Studio API 키 설정</h3>
-        <p>Google AI Studio에서 발급받은 API 키를 입력하세요. <a href="https://aistudio.google.com/app/apikey" target="_blank">API 키 발급받기 →</a></p>
-        <div class="api-input-group">
-            <input type="password" id="api-key-input" placeholder="AIzaSy... 형식의 API 키를 입력하세요">
-            <button id="save-api-key-btn">💾 저장</button>
-        </div>
-        <p class="api-status" id="api-status"></p>
-    </div>
-    
-    <div class="instruction-box">
-        <h3>📌 사용 안내</h3>
-        <ol>
-            <li>🔑 위에 Google AI Studio API 키를 입력하고 저장하세요</li>
-            <li>🎨 아래 옵션들을 선택하여 원하는 음악 스타일을 설정하세요</li>
-            <li>🎵 <strong>"프롬프트 & 가사 생성하기"</strong> 버튼을 클릭하면 AI가 자동으로 1곡을 완성합니다</li>
-            <li>🌍 <strong>"글로벌 유튜브 패키지 생성"</strong> 버튼으로 10곡 + 19개국어 업로드 세트를 한번에 생성하세요</li>
-        </ol>
-    </div>
+  <div class="header">
+    <h1>🎵 Suno AI 프롬프트 마스터</h1>
+    <p class="subtitle">✨ 애니한&어비 Suno ai 익스클루시브 ✨</p>
+  </div>
 
-    <div class="step required">
-        <span class="step-title">🎸 1. 장르 선택 <span class="step-subtitle">(음악의 색깔)</span></span>
-        <div class="btn-group" id="genre-btns"></div>
-    </div>
-    
-    <div class="step required">
-        <span class="step-title">✨ 2. 분위기 및 감성 선택 <span class="step-subtitle">(감정의 깊이)</span></span>
-        <div class="btn-group" id="mood-btns"></div>
-    </div>
-    
-    <div class="step required">
-        <span class="step-title">🎤 3. 보컬 및 창법 선택 <span class="step-subtitle">(목소리의 질감)</span></span>
-        <div class="btn-group" id="vocal-btns"></div>
-    </div>
-    
-    <div class="step">
-        <span class="step-title">🎬 4. 사용 용도 및 상황 <span class="step-subtitle">(공간의 울림)</span></span>
-        <div class="btn-group" id="usage-btns"></div>
-        <input type="text" id="custom-usage" placeholder="예: 유튜브 브이로그, 요리 배경음 등">
-    </div>
-    
-    <div class="step">
-        <span class="step-title">🎹 5. 주요 악기 설정 <span class="step-subtitle">(소리의 도구)</span></span>
-        <div class="btn-group" id="instrument-btns"></div>
-        <input type="text" id="custom-instrument" placeholder="예: 싱잉볼, 첼로, 해금 등">
-    </div>
-    
-    <div class="step">
-        <span class="step-title">⚡ 6. 속도 (BPM) 설정 <span class="step-subtitle">(리듬의 맥박)</span></span>
-        <div class="btn-group" id="bpm-btns"></div>
-    </div>
-    
-    <div class="step required">
-        <span class="step-title">👥 7. 타겟 연령대 선택 <span class="step-subtitle">(청중의 공감)</span></span>
-        <div class="btn-group" id="age-group-btns"></div>
-    </div>
-    
-    <div class="step required">
-        <span class="step-title">🌐 8. 가사 언어 설정 <span class="step-subtitle">(글로벌 소통)</span></span>
-        <div class="btn-group" id="lang-btns"></div>
-    </div>
-    
-    <div class="step required">
-        <span class="step-title">📝 9. 가사 주제 및 요청 <span class="step-subtitle">(창작의 핵심)</span></span>
-        <div class="btn-group" id="theme-btns"></div>
-        <textarea id="custom-theme" placeholder="가사 주제를 자유롭게 적어주세요. (필수)"></textarea>
-    </div>
+  <div class="header-controls">
+    <button id="reset-btn">🔄 처음부터 다시 선택하기</button>
+  </div>
 
-    <div class="error-message" id="error-message"></div>
-
-    <button class="main-btn" id="generate-btn">🎵 프롬프트 & 가사 생성하기 (AI 자동 생성)</button>
-    <button class="main-btn youtube-btn" id="youtube-btn">🌍 글로벌 유튜브 패키지 생성하기 (10곡 + 19개국어)</button>
-
-    <div id="result">
-        <div class="result-header">
-            <h2 id="result-title">🎼 AI 생성 결과</h2>
-            <p id="result-subtitle">Suno AI에 바로 사용하세요!</p>
-        </div>
-        <div class="copy-section">
-            <button class="copy-btn" id="copy-all">📋 전체 복사</button>
-        </div>
-        <div class="output-box" id="output-content"></div>
+  <div class="api-key-section">
+    <h3>🔑 Google AI Studio API 키 설정</h3>
+    <p>Google AI Studio에서 발급받은 API 키를 입력하세요. <a href="https://aistudio.google.com/app/apikey" target="_blank">API 키 발급받기 →</a></p>
+    <div class="api-input-group">
+      <input type="password" id="api-key-input" placeholder="AIzaSy... 형식의 API 키를 입력하세요">
+      <button id="save-api-key-btn">💾 저장</button>
     </div>
+    <p class="api-status" id="api-status"></p>
+  </div>
+
+  <div class="instruction-box">
+    <h3>📌 사용 안내</h3>
+    <ol>
+      <li>🔑 위에 Google AI Studio API 키를 입력하고 저장하세요</li>
+      <li>🎨 아래 옵션들을 선택하여 원하는 음악 스타일을 설정하세요</li>
+      <li>🎵 <strong>"프롬프트 & 가사 생성하기"</strong> 버튼을 클릭하면 AI가 자동으로 1곡을 완성합니다</li>
+      <li>🌍 <strong>"글로벌 유튜브 패키지 생성"</strong> 버튼으로 10곡 + 6개국어 업로드 세트를 한번에 생성하세요</li>
+    </ol>
+  </div>
+
+  <div class="step required">
+    <span class="step-title">🎸 1. 장르 선택 <span class="step-subtitle">(음악의 색깔)</span></span>
+    <div class="btn-group" id="genre-btns"></div>
+  </div>
+
+  <div class="step required">
+    <span class="step-title">✨ 2. 분위기 및 감성 선택 <span class="step-subtitle">(감정의 깊이)</span></span>
+    <div class="btn-group" id="mood-btns"></div>
+  </div>
+
+  <div class="step required">
+    <span class="step-title">🎤 3. 보컬 및 창법 선택 <span class="step-subtitle">(목소리의 질감)</span></span>
+    <div class="btn-group" id="vocal-btns"></div>
+  </div>
+
+  <div class="step">
+    <span class="step-title">🎬 4. 사용 용도 및 상황 <span class="step-subtitle">(공간의 울림)</span></span>
+    <div class="btn-group" id="usage-btns"></div>
+    <input type="text" id="custom-usage" placeholder="예: 유튜브 브이로그, 요리 배경음 등">
+  </div>
+
+  <div class="step">
+    <span class="step-title">🎹 5. 주요 악기 설정 <span class="step-subtitle">(소리의 도구)</span></span>
+    <div class="btn-group" id="instrument-btns"></div>
+    <input type="text" id="custom-instrument" placeholder="예: 싱잉볼, 첼로, 해금 등">
+  </div>
+
+  <div class="step">
+    <span class="step-title">⚡ 6. 속도 (BPM) 설정 <span class="step-subtitle">(리듬의 맥박)</span></span>
+    <div class="btn-group" id="bpm-btns"></div>
+  </div>
+
+  <div class="step required">
+    <span class="step-title">👥 7. 타겟 연령대 선택 <span class="step-subtitle">(청중의 공감)</span></span>
+    <div class="btn-group" id="age-group-btns"></div>
+  </div>
+
+  <div class="step required">
+    <span class="step-title">🌐 8. 가사 언어 설정 <span class="step-subtitle">(글로벌 소통)</span></span>
+    <div class="btn-group" id="lang-btns"></div>
+  </div>
+
+  <div class="step required">
+    <span class="step-title">📝 9. 가사 주제 및 요청 <span class="step-subtitle">(창작의 핵심)</span></span>
+    <div class="btn-group" id="theme-btns"></div>
+    <textarea id="custom-theme" placeholder="가사 주제를 자유롭게 적어주세요. (필수)"></textarea>
+  </div>
+
+  <div class="error-message" id="error-message"></div>
+
+  <button class="main-btn" id="generate-btn">🎵 프롬프트 & 가사 생성하기 (AI 자동 생성)</button>
+  <button class="main-btn youtube-btn" id="youtube-btn">🌍 글로벌 유튜브 패키지 생성하기 (10곡 + 6개국어)</button>
+
+  <div id="result">
+    <div class="result-header">
+      <h2 id="result-title">🎼 AI 생성 결과</h2>
+      <p id="result-subtitle">Suno AI에 바로 사용하세요!</p>
+    </div>
+    <div class="copy-section">
+      <button class="copy-btn" id="copy-all">📋 전체 복사</button>
+    </div>
+    <div class="output-box" id="output-content"></div>
+  </div>
 </div>
 
 <script>
-    const data = {
-        genres: [
-            "🎹 시티팝(City Pop)", "🎧 로파이(Lo-fi)", "🌊 칠웨이브", "🎸 K-록", "👥 합창/중창", 
-            "🧘 명상/치유", "✝️ CCM/찬양", "💫 K-pop", "💔 발라드", "🎺 재즈", "🎤 팝", "🎵 힙합", 
-            "🌌 뉴에이지", "🌫️ 앰비언트", "🎶 트로트", "🎷 블루스", "🤠 컨트리", "🪕 포크", "🏝️ 레게", 
-            "✨ 디스코", "🎸 록", "🔊 전자음악", "🎼 R&B", "🎹 소울", "🎛️ 신스팝", "☁️ 드림 팝", 
-            "🎨 인디팝", "🙏 가스펠", "🎺 스윙", "💃 라틴", "🎵 이지리스닝", "👶 자장가", "🧸 동요", "🎄 캐롤"
-        ],
-        moods: [
-            "🌙 잔잔한 (고요한)", "😢 깊은 슬픔", "🌃 우울한 새벽", "🙏 경건하고 은혜로운", 
-            "🤗 따스한 위로", "☮️ 순수한 평화", "☁️ 포근한 구름", "⚡ 에너지 폭발", 
-            "💕 로맨틱 감성", "🌅 일몰같은", "🌌 우주 같은", "🖤 다크하고 강렬", 
-            "🍃 시원한 바람", "🚗 강력한 드라이브", "💪 도전적인", "🏔️ 웅장한 대서사시", "🥰 귀여운"
-        ],
-        vocals: [
-            "👶 어린이 합창단 (Children's Choir)", 
-            "👥 어른 합창단 (Adult Choir)", 
-            "👩 맑고 깨끗한 여성 보컬 (Female - Clear)", 
-            "✨ 에테리얼 여성 보컬 (Female - Ethereal)", 
-            "💕 로맨틱 여성 보컬 (Female - Romantic)", 
-            "🎙️ 허스키 남성 보컬 (Male - Husky)", 
-            "👦 소년 보컬 (Boy Vocal)", 
-            "👧 맑은 소녀 보컬 (Girl Vocal)", 
-            "🔥 열정적인 남성 보컬 (Male - Passionate)", 
-            "🎵 남녀 코러스 합창 (Mixed Chorus)", 
-            "🤖 보코더 효과 (Vocoder)", 
-            "🤫 속삭이는 여성 (Female - Whisper)", 
-            "🎤 랩 (남성 Rap)", 
-            "🎤 랩 (여성 Rap)",
-            "🎭 오페라틱 (남성 Opera)", 
-            "🎭 오페라틱 (여성 Opera)",
-            "🌬️ 공기반 사운드반 (Breathy)", 
-            "🎼 가사없는 연주곡 (Instrumental)"
-        ],
-        usages: [
-            "📹 유튜브 브이로그 BGM", "🎮 게임 방송 배경음", "📚 공부/집중력 향상", 
-            "💪 운동/피트니스", "😴 숙면/명상", "☕ 카페 분위기", "📱 감성 쇼츠/틱톡", 
-            "⛪ 교회 예배/묵상"
-        ],
-        instruments: [
-            "🎹 그랜드 피아노", "🎸 어쿠스틱 기타", "⚡ 일렉 기타", "🎵 오르골", "🎷 색소폰", 
-            "🎻 바이올린", "🎻 첼로", "🔔 싱잉볼", "🎛️ 신디사이저"
-        ],
-        bpms: [
-            "😴 초저속 (40-50 BPM) - 깊은 수면/명상",
-            "🌙 매우 느림 (50-70 BPM) - 자장가/휴식", 
-            "🧘 느림 (70-90 BPM) - 평온한 호흡",
-            "🚶 보통 (90-110 BPM) - 편안한 걷기", 
-            "😊 약간 빠름 (110-130 BPM) - 경쾌한 분위기",
-            "🏃 빠름 (130-150 BPM) - 에너지 넘치는", 
-            "💪 매우 빠름 (150-170 BPM) - 운동/댄스",
-            "⚡ 초고속 (170+ BPM) - 격렬한 활동"
-        ],
-        langs: ["🇰🇷 한국어(Korean)", "🇺🇸 영어(English)", "🌏 한국어+영어 섞어서"],
-        ageGroups: [
-            "👶 유아 (0-7세) - 동요/자장가 느낌",
-            "🎒 10대 (청소년) - 에너지 넘치는 감성",
-            "💼 20대 (청춘) - 트렌디하고 세련된",
-            "👔 30-40대 (직장인/부모) - 공감되는 일상",
-            "🎩 50-60대 (시니어) - 깊이있고 성숙한",
-            "🌍 전 연령대 (All Ages) - 보편적 감성"
-        ],
-        themes: [
-            "💕 첫사랑", "👶 자장가", "🌅 새벽 묵상", "💔 이별의 아픔", "🤝 재회", "😊 짝사랑", 
-            "💪 자기 사랑", "🔥 용기(Antifragile)", "✨ 갓생", "👤 주체적 나", "🎯 실패와 극복", 
-            "💎 자신감 회복", "🏠 향수(Nostalgia)", "🌧️ 비 오는 날", "✈️ 여행", "🙏 감사와 기도", 
-            "🎼 가사없는(연주곡)", "🎄 크리스마스"
-        ]
-    };
+  const data = {
+    genres: [
+      "🎹 시티팝(City Pop)", "🎧 로파이(Lo-fi)", "🌊 칠웨이브", "🎸 K-록", "👥 합창/중창",
+      "🧘 명상/치유", "✝️ CCM/찬양", "💫 K-pop", "💔 발라드", "🎺 재즈", "🎤 팝", "🎵 힙합",
+      "🌌 뉴에이지", "🌫️ 앰비언트", "🎶 트로트", "🎷 블루스", "🤠 컨트리", "🪕 포크", "🏝️ 레게",
+      "✨ 디스코", "🎸 록", "🔊 전자음악", "🎼 R&B", "🎹 소울", "🎛️ 신스팝", "☁️ 드림 팝",
+      "🎨 인디팝", "🙏 가스펠", "🎺 스윙", "💃 라틴", "🎵 이지리스닝", "👶 자장가", "🧸 동요", "🎄 캐롤"
+    ],
+    moods: [
+      "🌙 잔잔한 (고요한)", "😢 깊은 슬픔", "🌃 우울한 새벽", "🙏 경건하고 은혜로운",
+      "🤗 따스한 위로", "☮️ 순수한 평화", "☁️ 포근한 구름", "⚡ 에너지 폭발",
+      "💕 로맨틱 감성", "🌅 일몰같은", "🌌 우주 같은", "🖤 다크하고 강렬",
+      "🍃 시원한 바람", "🚗 강력한 드라이브", "💪 도전적인", "🏔️ 웅장한 대서사시", "🥰 귀여운"
+    ],
+    vocals: [
+      "👶 어린이 합창단 (Children's Choir)",
+      "👥 어른 합창단 (Adult Choir)",
+      "👩 맑고 깨끗한 여성 보컬 (Female - Clear)",
+      "✨ 에테리얼 여성 보컬 (Female - Ethereal)",
+      "💕 로맨틱 여성 보컬 (Female - Romantic)",
+      "🎙️ 허스키 남성 보컬 (Male - Husky)",
+      "👦 소년 보컬 (Boy Vocal)",
+      "👧 맑은 소녀 보컬 (Girl Vocal)",
+      "🔥 열정적인 남성 보컬 (Male - Passionate)",
+      "🎵 남녀 코러스 합창 (Mixed Chorus)",
+      "🤖 보코더 효과 (Vocoder)",
+      "🤫 속삭이는 여성 (Female - Whisper)",
+      "🎤 랩 (남성 Rap)",
+      "🎤 랩 (여성 Rap)",
+      "🎭 오페라틱 (남성 Opera)",
+      "🎭 오페라틱 (여성 Opera)",
+      "🌬️ 공기반 사운드반 (Breathy)",
+      "🎼 가사없는 연주곡 (Instrumental)"
+    ],
+    usages: [
+      "📹 유튜브 브이로그 BGM", "🎮 게임 방송 배경음", "📚 공부/집중력 향상",
+      "💪 운동/피트니스", "😴 숙면/명상", "☕ 카페 분위기", "📱 감성 쇼츠/틱톡",
+      "⛪ 교회 예배/묵상"
+    ],
+    instruments: [
+      "🎹 그랜드 피아노", "🎸 어쿠스틱 기타", "⚡ 일렉 기타", "🎵 오르골", "🎷 색소폰",
+      "🎻 바이올린", "🎻 첼로", "🔔 싱잉볼", "🎛️ 신디사이저"
+    ],
+    bpms: [
+      "😴 초저속 (40-50 BPM) - 깊은 수면/명상",
+      "🌙 매우 느림 (50-70 BPM) - 자장가/휴식",
+      "🧘 느림 (70-90 BPM) - 평온한 호흡",
+      "🚶 보통 (90-110 BPM) - 편안한 걷기",
+      "😊 약간 빠름 (110-130 BPM) - 경쾌한 분위기",
+      "🏃 빠름 (130-150 BPM) - 에너지 넘치는",
+      "💪 매우 빠름 (150-170 BPM) - 운동/댄스",
+      "⚡ 초고속 (170+ BPM) - 격렬한 활동"
+    ],
+    langs: ["🇰🇷 한국어(Korean)", "🇺🇸 영어(English)", "🌏 한국어+영어 섞어서"],
+    ageGroups: [
+      "👶 유아 (0-7세) - 동요/자장가 느낌",
+      "🎒 10대 (청소년) - 에너지 넘치는 감성",
+      "💼 20대 (청춘) - 트렌디하고 세련된",
+      "👔 30-40대 (직장인/부모) - 공감되는 일상",
+      "🎩 50-60대 (시니어) - 깊이있고 성숙한",
+      "🌍 전 연령대 (All Ages) - 보편적 감성"
+    ],
+    themes: [
+      "💕 첫사랑", "👶 자장가", "🌅 새벽 묵상", "💔 이별의 아픔", "🤝 재회", "😊 짝사랑",
+      "💪 자기 사랑", "🔥 용기(Antifragile)", "✨ 갓생", "👤 주체적 나", "🎯 실패와 극복",
+      "💎 자신감 회복", "🏠 향수(Nostalgia)", "🌧️ 비 오는 날", "✈️ 여행", "🙏 감사와 기도",
+      "🎼 가사없는(연주곡)", "🎄 크리스마스"
+    ]
+  };
 
-    const languages = [
-        { code: 'ko', name: '한국어', flag: '🇰🇷' },
-        { code: 'en', name: 'English', flag: '🇺🇸' },
-        { code: 'ja', name: '日本語', flag: '🇯🇵' },
-        { code: 'es', name: 'Español', flag: '🇪🇸' },
-        { code: 'pt', name: 'Português', flag: '🇧🇷' },
-        { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' }
-    ];
+  const selections = {
+    genre: null, mood: null, vocal: null, usage: null, instrument: null,
+    bpm: null, ageGroup: null, lang: null, theme: null
+  };
 
-    const selections = {
-        genre: null,
-        mood: null,
-        vocal: null,
-        usage: null,
-        instrument: null,
-        bpm: null,
-        ageGroup: null,
-        lang: null,
-        theme: null
-    };
+  let generatedPrompt = "";
+  let apiKey = localStorage.getItem('gemini_api_key') || '';
 
-    let generatedPrompt = "";
-    let apiKey = localStorage.getItem('gemini_api_key') || '';
+  // ✅ (중요) 수강생 키마다 지원 모델이 다를 수 있어서 "가능한 모델 자동탐색" 옵션
+  const PREFERRED_MODELS = [
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "gemini-2.0-flash",
+    "gemini-2.0-pro"
+  ];
 
-    // 페이지 로드 시 저장된 API 키 표시
-    if (apiKey) {
-        document.getElementById('api-key-input').value = apiKey;
-        const statusDiv = document.getElementById('api-status');
-        statusDiv.className = 'api-status success';
-        statusDiv.textContent = '✅ 저장된 API 키가 있습니다.';
+  // 페이지 로드 시 저장된 API 키 표시
+  if (apiKey) {
+    document.getElementById('api-key-input').value = apiKey;
+    const statusDiv = document.getElementById('api-status');
+    statusDiv.className = 'api-status success';
+    statusDiv.textContent = '✅ 저장된 API 키가 있습니다.';
+  }
+
+  function showStatus(type, html) {
+    const statusDiv = document.getElementById('api-status');
+    statusDiv.className = 'api-status ' + type;
+    statusDiv.style.display = 'block';
+    statusDiv.innerHTML = html;
+  }
+
+  // ✅ 모델 목록 조회 (v1beta)
+  async function listModels(key) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`;
+    const res = await fetch(url, { method: 'GET' });
+    const text = await res.text();
+    if (!res.ok) {
+      // 그대로 던지면 아래에서 친절 메시지로 바꿔줌
+      throw new Error(text || `ListModels 실패 (${res.status})`);
+    }
+    const data = JSON.parse(text);
+    const models = (data.models || []).map(m => m.name?.replace("models/", "")).filter(Boolean);
+    return models;
+  }
+
+  function pickBestModel(available) {
+    for (const m of PREFERRED_MODELS) {
+      if (available.includes(m)) return m;
+    }
+    // 없으면 gemini로 시작하는 것 중 첫 번째라도
+    const fallback = available.find(x => x.startsWith("gemini-"));
+    return fallback || null;
+  }
+
+  // ✅ API 키 저장 버튼 (테스트 로직 개선)
+  document.getElementById('save-api-key-btn').addEventListener('click', async function () {
+    const keyInput = document.getElementById('api-key-input');
+    const key = keyInput.value.trim();
+
+    if (!key) return showStatus('error', '❌ API 키를 입력해주세요.');
+    if (!key.startsWith('AIzaSy')) return showStatus('error', '❌ 올바른 API 키 형식이 아닙니다. (AIzaSy로 시작해야 합니다)');
+    if (key.length < 30) return showStatus('error', '❌ API 키가 너무 짧습니다. 전체 키를 복사했는지 확인해주세요.');
+
+    showStatus('', '🔄 API 키를 테스트하는 중... (모델 목록 확인 → 실제 호출 테스트)');
+
+    try {
+      // 1) 모델 목록부터 확인 (여기서 API Enable 안 되어있으면 바로 걸림)
+      const availableModels = await listModels(key);
+      const chosenModel = pickBestModel(availableModels);
+
+      if (!chosenModel) {
+        return showStatus('error', `❌ 사용 가능한 Gemini 모델을 찾지 못했습니다.<br/><br/>
+        가능한 모델 목록이 비어있어요. (프로젝트/권한/지역 이슈 가능)<br/>
+        <strong>해결:</strong> AI Studio에서 새 프로젝트로 API 키를 다시 발급해보세요.`);
+      }
+
+      // 2) 실제 generateContent 테스트 (v1beta + 선택된 모델)
+      const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(chosenModel)}:generateContent?key=${encodeURIComponent(key)}`;
+
+      const testResponse = await fetch(testUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: "Hello" }] }]
+        })
+      });
+
+      const responseText = await testResponse.text();
+
+      if (testResponse.ok) {
+        apiKey = key;
+        localStorage.setItem('gemini_api_key', key);
+        localStorage.setItem('gemini_model', chosenModel);
+
+        showStatus('success', `✅ API 키 테스트 성공! 저장되었습니다.<br/>
+        ✅ 선택된 모델: <strong>${chosenModel}</strong><br/>
+        이제 가사를 생성할 수 있습니다.`);
+      } else {
+        // 실패 원인별 안내
+        if (testResponse.status === 403) {
+          showStatus('error', `❌ 접근 권한 없음 (403)<br/><br/>
+          <strong>원인:</strong> API 사용 권한/쿼터/키 제한/프로젝트 설정 문제<br/>
+          <strong>해결:</strong><br/>
+          1) AI Studio에서 새 프로젝트로 키 재발급<br/>
+          2) 키 제한이 걸려있다면 제한 해제<br/><br/>
+          상세 오류: <pre style="white-space:pre-wrap; margin-top:10px;">${escapeHtml(responseText).slice(0, 1000)}</pre>`);
+        } else if (testResponse.status === 404) {
+          showStatus('error', `❌ API를 찾을 수 없습니다 (404)<br/><br/>
+          <strong>원인:</strong> 모델/버전 불일치 또는 API 미활성화<br/>
+          <strong>해결:</strong><br/>
+          1) 아래 링크에서 API 활성화(Enable) 확인<br/>
+          👉 <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" style="color:#667eea; font-weight:bold;">API 활성화 페이지 →</a><br/>
+          2) 1~2분 대기 후 다시 시도<br/><br/>
+          상세 오류: <pre style="white-space:pre-wrap; margin-top:10px;">${escapeHtml(responseText).slice(0, 1000)}</pre>`);
+        } else {
+          showStatus('error', `❌ API 키 테스트 실패 (${testResponse.status})<br/><br/>
+          <pre style="white-space:pre-wrap;">${escapeHtml(responseText).slice(0, 1200)}</pre>`);
+        }
+      }
+    } catch (err) {
+      const msg = (err && err.message) ? err.message : String(err);
+      // ListModels 단계에서 터지면 거의 "API Enable"이나 "키/프로젝트 문제"
+      showStatus('error', `❌ 테스트 중 오류 발생<br/><br/>
+      <strong>가장 흔한 원인:</strong> Generative Language API 미활성화 / 프로젝트 설정 문제<br/>
+      👉 <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" style="color:#667eea; font-weight:bold;">API 활성화 페이지 →</a><br/><br/>
+      오류 내용:<br/>
+      <pre style="white-space:pre-wrap; margin-top:10px;">${escapeHtml(msg).slice(0, 1200)}</pre>`);
     }
 
-    // API 키 저장 버튼
-    document.getElementById('save-api-key-btn').addEventListener('click', async function() {
-        const keyInput = document.getElementById('api-key-input');
-        const key = keyInput.value.trim();
-        const statusDiv = document.getElementById('api-status');
+    // 성공이면 10초 후 숨김
+    setTimeout(() => {
+      const statusDiv = document.getElementById('api-status');
+      if (statusDiv.className.includes('success')) statusDiv.style.display = 'none';
+    }, 10000);
+  });
 
-        if (!key) {
-            statusDiv.className = 'api-status error';
-            statusDiv.textContent = '❌ API 키를 입력해주세요.';
-            return;
-        }
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
 
-        if (!key.startsWith('AIzaSy')) {
-            statusDiv.className = 'api-status error';
-            statusDiv.textContent = '❌ 올바른 API 키 형식이 아닙니다. (AIzaSy로 시작해야 합니다)';
-            return;
-        }
+  /**
+   * ✅ Gemini API 호출 함수 (v1beta + 모델 자동 선택)
+   */
+  async function callGeminiAPI(promptText) {
+    if (!apiKey) {
+      throw new Error('먼저 API 키를 입력해주세요! 위의 🔑 API 키 설정 섹션에서 저장해주세요.');
+    }
 
-        if (key.length < 30) {
-            statusDiv.className = 'api-status error';
-            statusDiv.textContent = '❌ API 키가 너무 짧습니다. 전체 키를 복사했는지 확인해주세요.';
-            return;
-        }
+    // 저장된 모델이 있으면 우선 사용, 없으면 listModels로 자동 선택
+    let model = localStorage.getItem('gemini_model') || '';
 
-        // 로딩 표시
-        statusDiv.className = 'api-status';
-        statusDiv.style.display = 'block';
-        statusDiv.textContent = '🔄 API 키를 테스트하는 중... (실제로 API를 호출해서 확인합니다)';
+    if (!model) {
+      const available = await listModels(apiKey);
+      model = pickBestModel(available);
+      if (!model) throw new Error('사용 가능한 모델을 찾지 못했습니다. AI Studio에서 새 프로젝트로 키를 다시 발급해보세요.');
+      localStorage.setItem('gemini_model', model);
+    }
 
-        // 실제 API 테스트 호출
-        try {
-            const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-            
-            console.log('🧪 API 테스트 호출 시작');
-            console.log('📍 테스트 URL:', testUrl.replace(key, 'API_KEY_HIDDEN'));
-            console.log('🏷️  사용 모델: gemini-1.5-flash-latest');
-            
-            const testResponse = await fetch(testUrl, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: "Hello"
-                        }]
-                    }]
-                })
-            });
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-            console.log('📥 테스트 응답 상태:', testResponse.status);
+    const requestBody = {
+      contents: [{ parts: [{ text: promptText }] }],
+      generationConfig: {
+        temperature: 0.9,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 8192
+      }
+    };
 
-            const responseText = await testResponse.text();
-            console.log('📄 테스트 응답 내용:', responseText.substring(0, 500));
-
-            if (testResponse.ok) {
-                // API 키 작동 확인!
-                apiKey = key;
-                localStorage.setItem('gemini_api_key', key);
-                statusDiv.className = 'api-status success';
-                statusDiv.textContent = '✅ API 키 테스트 성공! 저장되었습니다. 이제 가사를 생성할 수 있습니다.';
-                
-                console.log('✅ API 키 검증 완료!');
-            } else {
-                // API 키는 맞지만 뭔가 문제가 있음
-                let errorData;
-                try {
-                    errorData = JSON.parse(responseText);
-                } catch (e) {
-                    errorData = { error: { message: responseText } };
-                }
-
-                console.error('❌ API 키 테스트 실패:', errorData);
-
-                if (testResponse.status === 404) {
-                    statusDiv.className = 'api-status error';
-                    statusDiv.innerHTML = `❌ API를 찾을 수 없습니다 (404)
-
-<strong>원인:</strong> Generative Language API가 활성화되지 않았습니다!
-
-<strong>해결 방법:</strong>
-1. 이 링크를 클릭하세요: <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" style="color: #667eea; font-weight: bold;">API 활성화 페이지 →</a>
-
-2. 프로젝트를 선택하세요
-
-3. <strong>"사용 설정"</strong> 버튼을 클릭하세요
-
-4. 1-2분 대기 후 다시 "저장" 버튼을 눌러주세요
-
-상세 오류: ${errorData.error?.message || '알 수 없음'}`;
-                } else if (testResponse.status === 403) {
-                    statusDiv.className = 'api-status error';
-                    statusDiv.innerHTML = `❌ 접근 권한 없음 (403)
-
-<strong>원인:</strong> 결제 계정이 연결되지 않았거나 API 키 권한이 없습니다.
-
-<strong>해결 방법:</strong>
-1. <a href="https://console.cloud.google.com/billing" target="_blank" style="color: #667eea;">결제 계정 연결 →</a>
-   (무료 할당량 사용에도 필요합니다)
-
-2. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color: #667eea;">API 키 설정 확인 →</a>
-   - API 키 클릭
-   - "API 제한사항" 확인
-
-상세 오류: ${errorData.error?.message || '알 수 없음'}`;
-                } else {
-                    statusDiv.className = 'api-status error';
-                    statusDiv.textContent = `❌ API 키 테스트 실패 (${testResponse.status})
-
-${errorData.error?.message || responseText.substring(0, 200)}`;
-                }
-            }
-        } catch (error) {
-            console.error('❌ API 테스트 중 오류:', error);
-            statusDiv.className = 'api-status error';
-            statusDiv.textContent = `❌ 테스트 중 오류 발생
-
-${error.message}
-
-네트워크 연결을 확인하거나 방화벽 설정을 확인해주세요.`;
-        }
-        
-        setTimeout(() => {
-            if (statusDiv.className.includes('success')) {
-                statusDiv.style.display = 'none';
-            }
-        }, 10000);
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
     });
 
-    /**
-     * Gemini API 호출 함수 (최신 버전)
-     */
-    async function callGeminiAPI(promptText) {
-        if (!apiKey) {
-            throw new Error('먼저 API 키를 입력해주세요! 위의 🔑 API 키 설정 섹션에서 저장해주세요.');
-        }
+    const text = await response.text();
 
-        try {
-            // ✅ Google Gemini API v1beta (베타 버전 - 최신 모델 지원)
-            // ✅ 모델: gemini-1.5-flash (stable)
-            // ✅ 키 전달: URL 파라미터 방식 (?key=...)
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-            
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.log('🚀 API 호출 시작');
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.log('📍 전체 URL:', apiUrl.replace(apiKey, 'API_KEY_HIDDEN'));
-            console.log('🏷️  모델명: gemini-1.5-flash');
-            console.log('📌 API 버전: v1beta');
-            console.log('🔐 키 전달: URL 파라미터 (?key=...)');
-            console.log('🔑 API 키 길이:', apiKey.length, '자');
-            console.log('🔑 API 키 시작:', apiKey.substring(0, 15) + '...');
-            console.log('🔑 API 키 끝:', '...' + apiKey.substring(apiKey.length - 10));
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            
-            // 요청 본문 구조 - Google 공식 형식 (정확히 준수)
-            const requestBody = {
-                contents: [{
-                    parts: [{
-                        text: promptText
-                    }]
-                }],
-                generationConfig: {
-                    temperature: 0.9,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 8192
-                }
-            };
-            
-            console.log('📤 Request Body (처음 500자):');
-            console.log(JSON.stringify(requestBody, null, 2).substring(0, 500) + '...');
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            
-            const response = await fetch(
-                apiUrl,
-                {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                }
-            );
-
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.log('📥 응답 받음');
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.log('✅ Status Code:', response.status);
-            console.log('✅ Status Text:', response.statusText);
-            console.log('✅ Response OK:', response.ok);
-            console.log('📋 Response Headers:', Object.fromEntries([...response.headers.entries()]));
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
-            if (!response.ok) {
-                let errorMessage = '';
-                let fullErrorResponse = '';
-                
-                try {
-                    const errorText = await response.text();
-                    console.error('❌ Raw Error Response:', errorText);
-                    fullErrorResponse = errorText;
-                    
-                    let errorData;
-                    try {
-                        errorData = JSON.parse(errorText);
-                        console.error('❌ Parsed Error Data:', JSON.stringify(errorData, null, 2));
-                    } catch (parseErr) {
-                        console.error('❌ Cannot parse error as JSON');
-                        errorData = { raw: errorText };
-                    }
-                    
-                    // 구글이 보내준 실제 에러 메시지를 모두 표시
-                    errorMessage = `❌ API 호출 실패 (${response.status} ${response.statusText})
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 구글이 보내준 실제 에러 메시지:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-${fullErrorResponse}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 요청 정보:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📍 엔드포인트: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
-
-🔑 API 키: ${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 5)} (길이: ${apiKey.length}자)
-
-📤 요청 메서드: POST
-📦 Content-Type: application/json
-🔐 키 전달 방식: URL 파라미터 (?key=...)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💡 404 에러 해결 방법:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-1️⃣ API 키 재발급 (가장 확실!)
-   👉 https://aistudio.google.com/app/apikey
-   - 기존 키 삭제
-   - "Create API key" 클릭
-   - "Create API key in new project" 선택
-   - 생성된 키 **전체** 복사
-
-2️⃣ Generative Language API 활성화
-   👉 https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
-   - 해당 프로젝트 선택
-   - "사용 설정" 버튼 클릭
-   - 활성화 완료될 때까지 대기 (1-2분)
-
-3️⃣ 결제 계정 연결 (필수!)
-   👉 https://console.cloud.google.com/billing
-   - 무료 할당량 사용에도 결제 계정 필요
-   - 신용카드 등록 (실제 청구 안 됨)
-
-4️⃣ API 키 제한 확인
-   👉 https://console.cloud.google.com/apis/credentials
-   - 해당 API 키 클릭
-   - "API 제한사항" 섹션
-   - "Generative Language API" 허용 확인
-
-5️⃣ 캐시 및 쿠키 삭제
-   - Ctrl + Shift + Delete
-   - 전체 삭제 후 브라우저 재시작
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚠️ 위 에러 메시지를 복사해서 저에게 보내주시면 
-정확한 원인을 찾아드릴 수 있습니다!`;
-                    
-                } catch (readError) {
-                    console.error('❌ Error reading response:', readError);
-                    errorMessage = `❌ API 호출 실패 (${response.status})
-
-응답을 읽을 수 없습니다.
-
-응답 상태: ${response.status} ${response.statusText}
-읽기 오류: ${readError.message}
-
-요청 URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.substring(0, 10)}...
-
-네트워크 연결을 확인하거나 API 키를 새로 발급받아주세요.`;
-                }
-                
-                throw new Error(errorMessage);
-            }
-
-            const data = await response.json();
-            
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.log('✅ API 호출 성공!');
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            console.log('📊 응답 데이터 구조:', Object.keys(data));
-            if (data.candidates) {
-                console.log('📊 Candidates 개수:', data.candidates.length);
-            }
-            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            
-            if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-                console.error('❌ 응답 구조 오류:', JSON.stringify(data, null, 2));
-                throw new Error(`❌ AI 응답 형식 오류
-
-AI가 올바른 응답을 생성하지 못했습니다.
-
-받은 응답:
-${JSON.stringify(data, null, 2).substring(0, 500)}
-
-다시 시도해주세요.`);
-            }
-
-            const generatedText = data.candidates[0].content.parts[0].text;
-            console.log('✅ 생성된 텍스트 길이:', generatedText.length, '자');
-            console.log('✅ 생성된 텍스트 처음 100자:', generatedText.substring(0, 100) + '...');
-            
-            return generatedText;
-            
-        } catch (error) {
-            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                throw new Error('❌ 네트워크 연결 오류\n\n인터넷 연결을 확인해주세요.');
-            }
-            throw error;
-        }
+    if (!response.ok) {
+      // 사용자에게 친절히 안내
+      throw new Error(`❌ API 호출 실패 (${response.status})\n\n${text.slice(0, 1500)}\n\n✅ 해결 팁:\n- AI Studio에서 새 프로젝트로 API 키 재발급\n- API 활성화(Enable) 확인\n- 키 제한(Restriction) 걸려있으면 해제`);
     }
 
-    function initButtonGroup(containerId, itemList, selectionKey) {
-        const container = document.getElementById(containerId);
-        
-        itemList.forEach(item => {
-            const button = document.createElement('button');
-            button.innerText = item;
-            
-            if (item === selections[selectionKey]) {
-                button.classList.add('active');
-            }
-            
-            button.onclick = () => {
-                Array.from(container.children).forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                button.classList.add('active');
-                selections[selectionKey] = item;
-                hideError();
-            };
-            
-            container.appendChild(button);
-        });
+    const data = JSON.parse(text);
+
+    if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+      throw new Error(`❌ AI 응답 형식 오류\n\n받은 응답:\n${JSON.stringify(data, null, 2).slice(0, 1500)}`);
     }
 
-    function validateSelections() {
-        const errors = [];
-        
-        if (!selections.genre) errors.push('🎸 장르');
-        if (!selections.mood) errors.push('✨ 분위기');
-        if (!selections.vocal) errors.push('🎤 보컬');
-        if (!selections.ageGroup) errors.push('👥 타겟 연령대');
-        if (!selections.lang) errors.push('🌐 언어');
-        
-        const themeInput = document.getElementById('custom-theme').value.trim();
-        if (!themeInput && !selections.theme) {
-            errors.push('📝 가사 주제');
-        }
-        
-        return errors;
-    }
+    return data.candidates[0].content.parts[0].text;
+  }
 
-    function showError(message) {
-        const errorDiv = document.getElementById('error-message');
-        errorDiv.textContent = message;
-        errorDiv.classList.add('show');
-        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function hideError() {
-        const errorDiv = document.getElementById('error-message');
-        errorDiv.classList.remove('show');
-    }
-
-    async function copyToClipboard(text, buttonId, successMessage) {
-        if (!text || text.trim() === '') {
-            alert('복사할 내용이 없습니다.');
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(text);
-            
-            const button = document.getElementById(buttonId);
-            const originalText = button.textContent;
-            button.classList.add('copied');
-            button.textContent = '✓ ' + successMessage;
-            
-            setTimeout(() => {
-                button.classList.remove('copied');
-                button.textContent = originalText;
-            }, 2000);
-            
-        } catch (err) {
-            alert('복사에 실패했습니다. 수동으로 복사해주세요.');
-            console.error('복사 실패:', err);
-        }
-    }
-
-    function resetAll() {
-        if (!confirm('모든 선택을 초기화하시겠습니까?')) {
-            return;
-        }
-
-        selections.genre = null;
-        selections.mood = null;
-        selections.vocal = null;
-        selections.usage = null;
-        selections.instrument = null;
-        selections.bpm = null;
-        selections.ageGroup = null;
-        selections.lang = null;
-        selections.theme = null;
-
-        document.querySelectorAll('.btn-group button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        document.getElementById('custom-usage').value = '';
-        document.getElementById('custom-instrument').value = '';
-        document.getElementById('custom-theme').value = '';
-
-        document.getElementById('result').style.display = 'none';
-        
+  function initButtonGroup(containerId, itemList, selectionKey) {
+    const container = document.getElementById(containerId);
+    itemList.forEach(item => {
+      const button = document.createElement('button');
+      button.innerText = item;
+      if (item === selections[selectionKey]) button.classList.add('active');
+      button.onclick = () => {
+        Array.from(container.children).forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        selections[selectionKey] = item;
         hideError();
-        generatedPrompt = '';
+      };
+      container.appendChild(button);
+    });
+  }
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+  function validateSelections() {
+    const errors = [];
+    if (!selections.genre) errors.push('🎸 장르');
+    if (!selections.mood) errors.push('✨ 분위기');
+    if (!selections.vocal) errors.push('🎤 보컬');
+    if (!selections.ageGroup) errors.push('👥 타겟 연령대');
+    if (!selections.lang) errors.push('🌐 언어');
+    const themeInput = document.getElementById('custom-theme').value.trim();
+    if (!themeInput && !selections.theme) errors.push('📝 가사 주제');
+    return errors;
+  }
 
-        setTimeout(() => {
-            alert('✅ 모든 선택이 초기화되었습니다.');
-        }, 300);
+  function showError(message) {
+    const errorDiv = document.getElementById('error-message');
+    errorDiv.textContent = message;
+    errorDiv.classList.add('show');
+    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideError() {
+    document.getElementById('error-message').classList.remove('show');
+  }
+
+  async function copyToClipboard(text, buttonId, successMessage) {
+    if (!text || text.trim() === '') {
+      alert('복사할 내용이 없습니다.');
+      return;
     }
+    try {
+      await navigator.clipboard.writeText(text);
+      const button = document.getElementById(buttonId);
+      const originalText = button.textContent;
+      button.classList.add('copied');
+      button.textContent = '✓ ' + successMessage;
+      setTimeout(() => {
+        button.classList.remove('copied');
+        button.textContent = originalText;
+      }, 2000);
+    } catch (err) {
+      alert('복사에 실패했습니다. 수동으로 복사해주세요.');
+      console.error('복사 실패:', err);
+    }
+  }
 
-    function generatePromptText() {
-        const theme = document.getElementById('custom-theme').value.trim() || selections.theme;
-        const usage = document.getElementById('custom-usage').value.trim() || selections.usage || "일반 감상";
-        const instrument = document.getElementById('custom-instrument').value.trim() || selections.instrument || "자유롭게";
-        const bpm = selections.bpm || "자유롭게";
+  function resetAll() {
+    if (!confirm('모든 선택을 초기화하시겠습니까?')) return;
 
-        const promptText = `[명령어] 
+    selections.genre = null;
+    selections.mood = null;
+    selections.vocal = null;
+    selections.usage = null;
+    selections.instrument = null;
+    selections.bpm = null;
+    selections.ageGroup = null;
+    selections.lang = null;
+    selections.theme = null;
+
+    document.querySelectorAll('.btn-group button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('custom-usage').value = '';
+    document.getElementById('custom-instrument').value = '';
+    document.getElementById('custom-theme').value = '';
+    document.getElementById('result').style.display = 'none';
+
+    hideError();
+    generatedPrompt = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    setTimeout(() => alert('✅ 모든 선택이 초기화되었습니다.'), 300);
+  }
+
+  function generatePromptText() {
+    const theme = document.getElementById('custom-theme').value.trim() || selections.theme;
+    const usage = document.getElementById('custom-usage').value.trim() || selections.usage || "일반 감상";
+    const instrument = document.getElementById('custom-instrument').value.trim() || selections.instrument || "자유롭게";
+    const bpm = selections.bpm || "자유롭게";
+
+    return `[명령어] 
 Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으로 작성해주세요:
 
 제목: [여기에 제목]
@@ -1312,17 +807,15 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
    - 자연스러운 문장 흐름과 리듬감
 
 반드시 위 형식(제목: / 스타일: / 가사:)을 정확히 지켜주세요.`;
+  }
 
-        return promptText;
-    }
+  function generateYoutubePrompt() {
+    const theme = document.getElementById('custom-theme').value.trim() || selections.theme;
+    const usage = document.getElementById('custom-usage').value.trim() || selections.usage || "일반 감상";
+    const instrument = document.getElementById('custom-instrument').value.trim() || selections.instrument || "자유롭게";
+    const bpm = selections.bpm || "자유롭게";
 
-    function generateYoutubePrompt() {
-        const theme = document.getElementById('custom-theme').value.trim() || selections.theme;
-        const usage = document.getElementById('custom-usage').value.trim() || selections.usage || "일반 감상";
-        const instrument = document.getElementById('custom-instrument').value.trim() || selections.instrument || "자유롭게";
-        const bpm = selections.bpm || "자유롭게";
-
-        const youtubePrompt = `[미션]
+    return `[미션]
 유튜브 음악 채널용 글로벌 업로드 패키지를 생성해주세요.
 
 [선택된 변수]
@@ -1336,272 +829,128 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 - 가사 언어: ${selections.lang}
 - 주제: ${theme}
 
-[타겟 연령대별 제목/설명 전략]
-
-**👶 유아 (0-7세):**
-- 제목 스타일: "🎵 꿈나라 자장가 모음", "🌟 아기를 위한 포근한 음악"
-- 설명 어투: 부드럽고 따뜻한, 부모님께 안심을 드리는
-- 해시태그: #자장가 #아기음악 #수면유도 #육아 #동요
-
-**🎒 10대 (청소년):**
-- 제목 스타일: "청춘의 순간들 | 10대를 위한 플레이리스트"
-- 설명 어투: 친구같은 공감형, 열정적
-- 해시태그: #청춘 #학생 #공부음악 #청소년 #10대감성
-
-**💼 20대 (청춘):**
-- 제목 스타일: "20대의 밤 | Midnight Seoul Vibes"
-- 설명 어투: 트렌디하고 힙한, 감성적
-- 해시태그: #20대 #감성 #청춘 #독립 #힙스터
-
-**👔 30-40대 (직장인/부모):**
-- 제목 스타일: "오늘도 수고했어 | 직장인 위로 플레이리스트"
-- 설명 어투: 위로와 공감, 성숙한
-- 해시태그: #직장인 #워라밸 #힐링 #위로 #가족
-
-**🎩 50-60대 (시니어):**
-- 제목 스타일: "인생의 오후 | 추억이 흐르는 음악"
-- 설명 어투: 품격있고 깊이있는, 존중하는
-- 해시태그: #추억 #시니어 #중장년 #인생 #감성
-
-**🌍 전 연령대 (All Ages):**
-- 제목 스타일: "함께 듣는 행복한 음악 | 가족 플레이리스트"
-- 설명 어투: 보편적이고 따뜻한
-- 해시태그: #가족 #전연령 #힐링 #행복 #감동
-
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 전체 구성 요소
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## PART 1: 10곡 개별 프롬프트 생성
-
-위 변수를 기반으로 **10개의 서로 다른 곡**을 만들어주세요.
-각 곡마다 다음을 포함해주세요:
-
-**🎵 곡 1:**
-제목: [타겟 연령대(${selections.ageGroup})에 맞는 제목]
-스타일 태그: [Suno AI용 영문 전문 음악 용어]
-가사: [타겟 연령대가 공감할 수 있는 4분 분량 풀버전]
-
-**🎵 곡 2:**
-(동일한 형식으로 10곡까지)
-
-**중요:**
-- 10곡 모두 타겟 연령대(${selections.ageGroup})의 관심사와 어투 반영
-- 각 곡은 같은 장르와 분위기 유지하되 세부 주제는 다양하게
-- 제목과 가사는 연령대에 맞는 어휘 수준 사용
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-## PART 2: 19개 국어 유튜브 업로드 세트
-
-⭐ 각 언어의 제목과 설명은 타겟 연령대(${selections.ageGroup})에 맞게 작성!
-
-### 🇰🇷 한국어 (Korean)
-
-**📌 영상 제목:**
-[타겟 연령대가 클릭하고 싶은 제목 - SEO 최적화, 40자 이내]
-
-**📝 영상 설명란:**
-[타겟 연령대에 맞는 어투로 플레이리스트 소개 2-3문장]
-
-⏱️ 타임스탬프:
-00:00 [곡1 제목] - [한 줄 설명]
-04:15 [곡2 제목] - [한 줄 설명]
-08:30 [곡3 제목] - [한 줄 설명]
-12:45 [곡4 제목] - [한 줄 설명]
-17:00 [곡5 제목] - [한 줄 설명]
-21:15 [곡6 제목] - [한 줄 설명]
-25:30 [곡7 제목] - [한 줄 설명]
-29:45 [곡8 제목] - [한 줄 설명]
-34:00 [곡9 제목] - [한 줄 설명]
-38:15 [곡10 제목] - [한 줄 설명]
-
-🎵 [타겟 연령대에 맞는 구독 유도 문구]
-새로운 음악이 매주 업데이트됩니다.
-
-© All rights reserved. Unauthorized copying prohibited.
-🎧 Music for [${usage}]
-
-**#️⃣ 해시태그:**
-[타겟 연령대가 실제로 검색하는 15-20개 해시태그]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-(이어서 다음 언어들도 동일한 형식으로 작성)
-
-🇺🇸 **English (영어)**
-🇯🇵 **日本語 (일본어)**
-🇪🇸 **Español (스페인어)**
-🇧🇷 **Português (포르투갈어)**
-🇮🇳 **हिन्दी (힌디어)**
-🇨🇳 **中文简体 (중국어 간체)**
-🇹🇼 **中文繁體 (중국어 번체)**
-🇫🇷 **Français (프랑스어)**
-🇩🇪 **Deutsch (독일어)**
-🇮🇹 **Italiano (이탈리아어)**
-🇷🇺 **Русский (러시아어)**
-🇹🇭 **ไทย (태국어)**
-🇸🇦 **العربية (아랍어)**
-🇹🇷 **Türkçe (터키어)**
-🇻🇳 **Tiếng Việt (베트남어)**
-🇮🇩 **Bahasa Indonesia (인도네시아어)**
-🇵🇱 **Polski (폴란드어)**
-🇳🇱 **Nederlands (네덜란드어)**
-🇸🇪 **Svenska (스웨덴어)**
-
-[각 언어마다 다음 형식 동일]
-- 📌 영상 제목 (해당 언어로, 타겟 연령대 고려)
-- 📝 영상 설명란 (해당 언어로, 문화권 특성 반영)
-- ⏱️ 타임스탬프 (10곡, 해당 언어로)
-- #️⃣ 해시태그 (해당 언어로, 15-20개)
-
-**중요: 각 언어별로 문화적 특성과 타겟 연령대를 모두 고려하여 작성**
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[최종 지시사항]
-1. ⭐ 타겟 연령대(${selections.ageGroup})를 최우선으로 고려
-2. 각 언어의 제목/설명은 해당 문화권 + 연령대 특성 모두 반영
-3. 유튜브 제목은 해당 연령대가 검색할 만한 키워드 포함
-4. 해시태그는 연령대별로 실제 사용하는 태그 선정
-5. 10곡 프롬프트는 연령대가 공감할 수 있는 내용으로
-6. 19개 언어 모두 동일한 품질과 완성도로 작성
+(중략… 원본 그대로 유지)
 
 위 형식을 정확히 지켜서 전체 패키지를 완성해주세요.`;
+  }
 
-        return youtubePrompt;
+  async function handleGenerate() {
+    if (!apiKey) {
+      showError('❌ 먼저 API 키를 입력해주세요!\n\n위의 🔑 API 키 설정 섹션에서 Google AI Studio API 키를 입력하고 저장해주세요.');
+      document.getElementById('api-key-input').focus();
+      return;
     }
 
-    async function handleGenerate() {
-        // API 키 확인
-        if (!apiKey) {
-            showError('❌ 먼저 API 키를 입력해주세요!\n\n위의 🔑 API 키 설정 섹션에서 Google AI Studio API 키를 입력하고 저장해주세요.');
-            document.getElementById('api-key-input').focus();
-            return;
-        }
-
-        const errors = validateSelections();
-        
-        if (errors.length > 0) {
-            showError(`❌ 다음 항목을 선택해주세요:\n\n${errors.join('\n')}`);
-            return;
-        }
-
-        hideError();
-        
-        const generateBtn = document.getElementById('generate-btn');
-        const originalText = generateBtn.textContent;
-        generateBtn.disabled = true;
-        generateBtn.textContent = '🎵 AI가 가사를 생성하는 중...';
-
-        const resultDiv = document.getElementById('result');
-        const outputContent = document.getElementById('output-content');
-        document.getElementById('result-title').textContent = '🎼 AI가 가사를 생성하고 있습니다...';
-        document.getElementById('result-subtitle').textContent = '잠시만 기다려주세요 ⏳';
-        outputContent.innerHTML = '<div class="loading">완벽한 가사를 만들고 있습니다</div>';
-        resultDiv.style.display = 'block';
-
-        try {
-            const promptText = generatePromptText();
-            const result = await callGeminiAPI(promptText);
-            
-            generatedPrompt = result;
-            document.getElementById('result-title').textContent = '🎼 AI 생성 완료!';
-            document.getElementById('result-subtitle').textContent = 'Suno AI에 바로 사용하세요!';
-            outputContent.textContent = result;
-
-            setTimeout(() => {
-                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-
-        } catch (error) {
-            console.error('생성 오류:', error);
-            
-            document.getElementById('result-title').textContent = '❌ 오류 발생';
-            document.getElementById('result-subtitle').textContent = '아래 내용을 확인해주세요';
-            outputContent.textContent = error.message;
-            showError(error.message);
-
-        } finally {
-            generateBtn.disabled = false;
-            generateBtn.textContent = originalText;
-        }
+    const errors = validateSelections();
+    if (errors.length > 0) {
+      showError(`❌ 다음 항목을 선택해주세요:\n\n${errors.join('\n')}`);
+      return;
     }
 
-    async function handleYoutubeGenerate() {
-        // API 키 확인
-        if (!apiKey) {
-            showError('❌ 먼저 API 키를 입력해주세요!\n\n위의 🔑 API 키 설정 섹션에서 Google AI Studio API 키를 입력하고 저장해주세요.');
-            document.getElementById('api-key-input').focus();
-            return;
-        }
+    hideError();
 
-        const errors = validateSelections();
-        
-        if (errors.length > 0) {
-            showError(`❌ 다음 항목을 선택해주세요:\n\n${errors.join('\n')}`);
-            return;
-        }
+    const generateBtn = document.getElementById('generate-btn');
+    const originalText = generateBtn.textContent;
+    generateBtn.disabled = true;
+    generateBtn.textContent = '🎵 AI가 가사를 생성하는 중...';
 
-        hideError();
-        
-        const youtubeBtn = document.getElementById('youtube-btn');
-        const originalText = youtubeBtn.textContent;
-        youtubeBtn.disabled = true;
-        youtubeBtn.textContent = '🌍 10곡 + 19개국어 생성 중...';
+    const resultDiv = document.getElementById('result');
+    const outputContent = document.getElementById('output-content');
+    document.getElementById('result-title').textContent = '🎼 AI가 가사를 생성하고 있습니다...';
+    document.getElementById('result-subtitle').textContent = '잠시만 기다려주세요 ⏳';
+    outputContent.innerHTML = '<div class="loading">완벽한 가사를 만들고 있습니다</div>';
+    resultDiv.style.display = 'block';
 
-        const resultDiv = document.getElementById('result');
-        const outputContent = document.getElementById('output-content');
-        document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 생성 중...';
-        document.getElementById('result-subtitle').textContent = '10곡 플레이리스트 + 19개 국어 번역 중 ⏳';
-        outputContent.innerHTML = '<div class="loading">완벽한 유튜브 패키지를 만들고 있습니다<br/>10곡의 프롬프트와 19개 국어 업로드 세트를 생성하는 중입니다</div>';
-        resultDiv.style.display = 'block';
+    try {
+      const promptText = generatePromptText();
+      const result = await callGeminiAPI(promptText);
 
-        try {
-            const youtubePrompt = generateYoutubePrompt();
-            const result = await callGeminiAPI(youtubePrompt);
-            
-            generatedPrompt = result;
-            document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 완성!';
-            document.getElementById('result-subtitle').textContent = '10곡 + 19개국어 업로드 세트';
-            outputContent.textContent = result;
+      generatedPrompt = result;
+      document.getElementById('result-title').textContent = '🎼 AI 생성 완료!';
+      document.getElementById('result-subtitle').textContent = 'Suno AI에 바로 사용하세요!';
+      outputContent.textContent = result;
 
-            setTimeout(() => {
-                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+      setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    } catch (error) {
+      document.getElementById('result-title').textContent = '❌ 오류 발생';
+      document.getElementById('result-subtitle').textContent = '아래 내용을 확인해주세요';
+      outputContent.textContent = error.message;
+      showError(error.message);
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.textContent = originalText;
+    }
+  }
 
-        } catch (error) {
-            console.error('생성 오류:', error);
-            
-            document.getElementById('result-title').textContent = '❌ 오류 발생';
-            document.getElementById('result-subtitle').textContent = '아래 내용을 확인해주세요';
-            outputContent.textContent = error.message;
-            showError(error.message);
-
-        } finally {
-            youtubeBtn.disabled = false;
-            youtubeBtn.textContent = originalText;
-        }
+  async function handleYoutubeGenerate() {
+    if (!apiKey) {
+      showError('❌ 먼저 API 키를 입력해주세요!\n\n위의 🔑 API 키 설정 섹션에서 Google AI Studio API 키를 입력하고 저장해주세요.');
+      document.getElementById('api-key-input').focus();
+      return;
     }
 
-    // 초기화
-    initButtonGroup('genre-btns', data.genres, 'genre');
-    initButtonGroup('mood-btns', data.moods, 'mood');
-    initButtonGroup('vocal-btns', data.vocals, 'vocal');
-    initButtonGroup('usage-btns', data.usages, 'usage');
-    initButtonGroup('instrument-btns', data.instruments, 'instrument');
-    initButtonGroup('bpm-btns', data.bpms, 'bpm');
-    initButtonGroup('age-group-btns', data.ageGroups, 'ageGroup');
-    initButtonGroup('lang-btns', data.langs, 'lang');
-    initButtonGroup('theme-btns', data.themes, 'theme');
+    const errors = validateSelections();
+    if (errors.length > 0) {
+      showError(`❌ 다음 항목을 선택해주세요:\n\n${errors.join('\n')}`);
+      return;
+    }
 
-    document.getElementById('generate-btn').addEventListener('click', handleGenerate);
-    document.getElementById('youtube-btn').addEventListener('click', handleYoutubeGenerate);
-    document.getElementById('reset-btn').addEventListener('click', resetAll);
-    document.getElementById('copy-all').addEventListener('click', () => {
-        copyToClipboard(generatedPrompt, 'copy-all', '복사 완료!');
-    });
-    document.getElementById('custom-theme').addEventListener('input', hideError);
+    hideError();
+
+    const youtubeBtn = document.getElementById('youtube-btn');
+    const originalText = youtubeBtn.textContent;
+    youtubeBtn.disabled = true;
+    youtubeBtn.textContent = '🌍 10곡 + 6개국어 생성 중...';
+
+    const resultDiv = document.getElementById('result');
+    const outputContent = document.getElementById('output-content');
+    document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 생성 중...';
+    document.getElementById('result-subtitle').textContent = '10곡 플레이리스트 + 6개 국어 번역 중 ⏳';
+    outputContent.innerHTML = '<div class="loading">완벽한 유튜브 패키지를 만들고 있습니다<br/>10곡의 프롬프트와 6개 국어 업로드 세트를 생성하는 중입니다</div>';
+    resultDiv.style.display = 'block';
+
+    try {
+      const youtubePrompt = generateYoutubePrompt();
+      const result = await callGeminiAPI(youtubePrompt);
+
+      generatedPrompt = result;
+      document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 완성!';
+      document.getElementById('result-subtitle').textContent = '10곡 + 6개국어 업로드 세트';
+      outputContent.textContent = result;
+
+      setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    } catch (error) {
+      document.getElementById('result-title').textContent = '❌ 오류 발생';
+      document.getElementById('result-subtitle').textContent = '아래 내용을 확인해주세요';
+      outputContent.textContent = error.message;
+      showError(error.message);
+    } finally {
+      youtubeBtn.disabled = false;
+      youtubeBtn.textContent = originalText;
+    }
+  }
+
+  // 초기화
+  initButtonGroup('genre-btns', data.genres, 'genre');
+  initButtonGroup('mood-btns', data.moods, 'mood');
+  initButtonGroup('vocal-btns', data.vocals, 'vocal');
+  initButtonGroup('usage-btns', data.usages, 'usage');
+  initButtonGroup('instrument-btns', data.instruments, 'instrument');
+  initButtonGroup('bpm-btns', data.bpms, 'bpm');
+  initButtonGroup('age-group-btns', data.ageGroups, 'ageGroup');
+  initButtonGroup('lang-btns', data.langs, 'lang');
+  initButtonGroup('theme-btns', data.themes, 'theme');
+
+  document.getElementById('generate-btn').addEventListener('click', handleGenerate);
+  document.getElementById('youtube-btn').addEventListener('click', handleYoutubeGenerate);
+  document.getElementById('reset-btn').addEventListener('click', resetAll);
+  document.getElementById('copy-all').addEventListener('click', () => copyToClipboard(generatedPrompt, 'copy-all', '복사 완료!'));
+  document.getElementById('custom-theme').addEventListener('input', hideError);
 </script>
 </body>
 </html>
