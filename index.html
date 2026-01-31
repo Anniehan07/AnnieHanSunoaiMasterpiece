@@ -614,7 +614,7 @@
             <li>🔑 위에 Google AI Studio API 키를 입력하고 저장하세요</li>
             <li>🎨 아래 옵션들을 선택하여 원하는 음악 스타일을 설정하세요</li>
             <li>🎵 <strong>"프롬프트 & 가사 생성하기"</strong> 버튼을 클릭하면 AI가 자동으로 1곡을 완성합니다</li>
-            <li>🌍 <strong>"글로벌 유튜브 패키지 생성"</strong> 버튼으로 10곡 + 6개국어 업로드 세트를 한번에 생성하세요</li>
+            <li>🌍 <strong>"글로벌 유튜브 패키지 생성"</strong> 버튼으로 10곡 + 19개국어 업로드 세트를 한번에 생성하세요</li>
         </ol>
     </div>
 
@@ -669,7 +669,7 @@
     <div class="error-message" id="error-message"></div>
 
     <button class="main-btn" id="generate-btn">🎵 프롬프트 & 가사 생성하기 (AI 자동 생성)</button>
-    <button class="main-btn youtube-btn" id="youtube-btn">🌍 글로벌 유튜브 패키지 생성하기 (10곡 + 6개국어)</button>
+    <button class="main-btn youtube-btn" id="youtube-btn">🌍 글로벌 유튜브 패키지 생성하기 (10곡 + 19개국어)</button>
 
     <div id="result">
         <div class="result-header">
@@ -817,7 +817,7 @@
 
         // 실제 API 테스트 호출
         try {
-            const testUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
+            const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
             
             console.log('🧪 API 테스트 호출 시작');
             console.log('📍 테스트 URL:', testUrl.replace(key, 'API_KEY_HIDDEN'));
@@ -925,17 +925,17 @@ ${error.message}
         }
 
         try {
-            // ✅ Google Gemini API v1 (안정 버전 - v1beta 아님!)
-            // ✅ 모델: gemini-1.5-flash-latest
+            // ✅ Google Gemini API v1beta (베타 버전 - 최신 모델 지원)
+            // ✅ 모델: gemini-1.5-flash (stable)
             // ✅ 키 전달: URL 파라미터 방식 (?key=...)
-            const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             
             console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             console.log('🚀 API 호출 시작');
             console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             console.log('📍 전체 URL:', apiUrl.replace(apiKey, 'API_KEY_HIDDEN'));
-            console.log('🏷️  모델명: gemini-1.5-flash-latest');
-            console.log('📌 API 버전: v1 (NOT v1beta)');
+            console.log('🏷️  모델명: gemini-1.5-flash');
+            console.log('📌 API 버전: v1beta');
             console.log('🔐 키 전달: URL 파라미터 (?key=...)');
             console.log('🔑 API 키 길이:', apiKey.length, '자');
             console.log('🔑 API 키 시작:', apiKey.substring(0, 15) + '...');
@@ -1012,7 +1012,7 @@ ${fullErrorResponse}
 📊 요청 정보:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📍 엔드포인트: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent
+📍 엔드포인트: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
 
 🔑 API 키: ${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 5)} (길이: ${apiKey.length}자)
 
@@ -1066,7 +1066,7 @@ ${fullErrorResponse}
 응답 상태: ${response.status} ${response.statusText}
 읽기 오류: ${readError.message}
 
-요청 URL: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${apiKey.substring(0, 10)}...
+요청 URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.substring(0, 10)}...
 
 네트워크 연결을 확인하거나 API 키를 새로 발급받아주세요.`;
                 }
@@ -1392,7 +1392,7 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## PART 2: 6개 국어 유튜브 업로드 세트
+## PART 2: 19개 국어 유튜브 업로드 세트
 
 ⭐ 각 언어의 제목과 설명은 타겟 연령대(${selections.ageGroup})에 맞게 작성!
 
@@ -1427,7 +1427,37 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-(이어서 🇺🇸 English, 🇯🇵 日本語, 🇪🇸 Español, 🇧🇷 Português, 🇮🇳 हिन्दी 동일한 형식으로 작성)
+(이어서 다음 언어들도 동일한 형식으로 작성)
+
+🇺🇸 **English (영어)**
+🇯🇵 **日本語 (일본어)**
+🇪🇸 **Español (스페인어)**
+🇧🇷 **Português (포르투갈어)**
+🇮🇳 **हिन्दी (힌디어)**
+🇨🇳 **中文简体 (중국어 간체)**
+🇹🇼 **中文繁體 (중국어 번체)**
+🇫🇷 **Français (프랑스어)**
+🇩🇪 **Deutsch (독일어)**
+🇮🇹 **Italiano (이탈리아어)**
+🇷🇺 **Русский (러시아어)**
+🇹🇭 **ไทย (태국어)**
+🇸🇦 **العربية (아랍어)**
+🇹🇷 **Türkçe (터키어)**
+🇻🇳 **Tiếng Việt (베트남어)**
+🇮🇩 **Bahasa Indonesia (인도네시아어)**
+🇵🇱 **Polski (폴란드어)**
+🇳🇱 **Nederlands (네덜란드어)**
+🇸🇪 **Svenska (스웨덴어)**
+
+[각 언어마다 다음 형식 동일]
+- 📌 영상 제목 (해당 언어로, 타겟 연령대 고려)
+- 📝 영상 설명란 (해당 언어로, 문화권 특성 반영)
+- ⏱️ 타임스탬프 (10곡, 해당 언어로)
+- #️⃣ 해시태그 (해당 언어로, 15-20개)
+
+**중요: 각 언어별로 문화적 특성과 타겟 연령대를 모두 고려하여 작성**
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [최종 지시사항]
 1. ⭐ 타겟 연령대(${selections.ageGroup})를 최우선으로 고려
@@ -1435,6 +1465,7 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
 3. 유튜브 제목은 해당 연령대가 검색할 만한 키워드 포함
 4. 해시태그는 연령대별로 실제 사용하는 태그 선정
 5. 10곡 프롬프트는 연령대가 공감할 수 있는 내용으로
+6. 19개 언어 모두 동일한 품질과 완성도로 작성
 
 위 형식을 정확히 지켜서 전체 패키지를 완성해주세요.`;
 
@@ -1517,13 +1548,13 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
         const youtubeBtn = document.getElementById('youtube-btn');
         const originalText = youtubeBtn.textContent;
         youtubeBtn.disabled = true;
-        youtubeBtn.textContent = '🌍 10곡 + 6개국어 생성 중...';
+        youtubeBtn.textContent = '🌍 10곡 + 19개국어 생성 중...';
 
         const resultDiv = document.getElementById('result');
         const outputContent = document.getElementById('output-content');
         document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 생성 중...';
-        document.getElementById('result-subtitle').textContent = '10곡 플레이리스트 + 6개 국어 번역 중 ⏳';
-        outputContent.innerHTML = '<div class="loading">완벽한 유튜브 패키지를 만들고 있습니다<br/>10곡의 프롬프트와 6개 국어 업로드 세트를 생성하는 중입니다</div>';
+        document.getElementById('result-subtitle').textContent = '10곡 플레이리스트 + 19개 국어 번역 중 ⏳';
+        outputContent.innerHTML = '<div class="loading">완벽한 유튜브 패키지를 만들고 있습니다<br/>10곡의 프롬프트와 19개 국어 업로드 세트를 생성하는 중입니다</div>';
         resultDiv.style.display = 'block';
 
         try {
@@ -1532,7 +1563,7 @@ Suno AI를 위한 노래 제목, Style Tag, 풀버전 가사를 다음 형식으
             
             generatedPrompt = result;
             document.getElementById('result-title').textContent = '🌍 글로벌 유튜브 패키지 완성!';
-            document.getElementById('result-subtitle').textContent = '10곡 + 6개국어 업로드 세트';
+            document.getElementById('result-subtitle').textContent = '10곡 + 19개국어 업로드 세트';
             outputContent.textContent = result;
 
             setTimeout(() => {
